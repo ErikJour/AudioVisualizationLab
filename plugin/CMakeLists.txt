@@ -27,12 +27,15 @@ target_sources(TrainingHour
         PRIVATE
         source/TrainingHourEditor.cpp
         source/TrainingHourProcessor.cpp
+        dsp/TrainingNoise.cpp
+        dsp/TrainingFilter.cpp
 )
 
 target_include_directories(TrainingHour
         PRIVATE
         include
         source
+        dsp
 )
 
 target_link_libraries(TrainingHour

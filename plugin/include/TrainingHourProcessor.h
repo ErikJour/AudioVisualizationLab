@@ -1,14 +1,16 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include "TrainingNoise.h"
+#include "TrainingFilter.h"
 
 //==============================================================================
-class AudioPluginAudioProcessor final : public juce::AudioProcessor
+class TrainingHourAudioProcessor final : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    AudioPluginAudioProcessor();
-    ~AudioPluginAudioProcessor() override;
+    TrainingHourAudioProcessor();
+    ~TrainingHourAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -43,6 +45,8 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    TrainingNoise noiseGenerator;
+    TrainingFilter allPassFilter;
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourAudioProcessor)
 };
