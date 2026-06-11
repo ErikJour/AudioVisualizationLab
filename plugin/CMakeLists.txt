@@ -23,12 +23,23 @@ else()
     target_compile_options(TrainingHour PRIVATE -Wall -Wextra -pedantic)
 endif()
 
+#WebGPU
+target_copy_webgpu_binaries(TrainingHour)
+if (APPLE)
+    set_target_properties(TrainingHour PROPERTIES
+            XCODE_GENERATE_SCHEME ON
+            XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal"
+            XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "Yes"
+    )
+endif()
+
 target_sources(TrainingHour
         PRIVATE
         source/TrainingHourEditor.cpp
         source/TrainingHourProcessor.cpp
         dsp/TrainingNoise.cpp
         dsp/TrainingFilter.cpp
+        UI/webGpuWindow.cpp
 )
 
 target_include_directories(TrainingHour
@@ -36,10 +47,12 @@ target_include_directories(TrainingHour
         include
         source
         dsp
+        UI
 )
 
 target_link_libraries(TrainingHour
         PRIVATE
+        webgpu
             juce::juce_audio_utils
             juce::juce_gui_extra
             juce::juce_dsp
@@ -54,4 +67,6 @@ target_compile_definitions(TrainingHour
             JUCE_USE_CURL=0
             JUCE_VST3_CAN_REPLACE_VST2=0
 )
+
+
 

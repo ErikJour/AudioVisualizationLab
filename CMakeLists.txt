@@ -9,7 +9,7 @@ project(
         VERSION 0.1.0
         LANGUAGES CXX C
 )
-
 add_subdirectory(libs/JUCE)
+add_subdirectory(webgpu)
 add_subdirectory(plugin)
 
