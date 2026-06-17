@@ -29,6 +29,7 @@ target_sources(TrainingHour
         source/TrainingHourProcessor.cpp
         dsp/TrainingNoise.cpp
         dsp/TrainingFilter.cpp
+        dsp/TrainingCircularBuffer.cpp
 )
 
 target_include_directories(TrainingHour

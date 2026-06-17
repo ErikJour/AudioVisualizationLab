@@ -3,6 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "TrainingNoise.h"
 #include "TrainingFilter.h"
+#include "TrainingCircularBuffer.h"
 
 //==============================================================================
 class TrainingHourAudioProcessor final : public juce::AudioProcessor
@@ -47,6 +48,7 @@ public:
 private:
     TrainingNoise noiseGenerator;
     TrainingFilter allPassFilter;
+    JourgensenTraining::TrainingCircularBuffer mCircularBuffer;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourAudioProcessor)
 };

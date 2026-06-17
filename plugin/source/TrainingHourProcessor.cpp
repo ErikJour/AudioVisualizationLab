@@ -89,6 +89,10 @@ void TrainingHourAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
+    mCircularBuffer.init(sampleRate);
+
+    // (Optional but recommended) Set a default delay so the read head is positioned safely
+    mCircularBuffer.setDelay(50);
 }
 
 void TrainingHourAudioProcessor::releaseResources()
@@ -136,6 +140,8 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
    noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
 
     allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+
+    mCircularBuffer.process(buffer.getWritePointer(0), buffer.getNumSamples());
 
 
 }
