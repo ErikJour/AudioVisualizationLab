@@ -128,6 +128,7 @@ bool TrainingHourAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
 {
+
     juce::ignoreUnused (midiMessages);
 
     juce::ScopedNoDenormals noDenormals;
@@ -137,7 +138,7 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-   noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
 
     allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
 
