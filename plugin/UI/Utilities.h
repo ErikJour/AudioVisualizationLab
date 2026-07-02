@@ -10,6 +10,8 @@
 #include <webgpu/webgpu.h>
 #include <filesystem>
 
+static constexpr uint32_t kMSAASamples = 4;
+
 inline WGPUAdapter requestAdapterSync(WGPUInstance instance, WGPURequestAdapterOptions const* options) {
     struct UserData {
         WGPUAdapter adapter  = nullptr;
@@ -28,6 +30,34 @@ inline WGPUAdapter requestAdapterSync(WGPUInstance instance, WGPURequestAdapterO
         },
         &userData
     );
+
+    while (!userData.requestEnded) wgpuInstanceProcessEvents(instance);
+    assert(userData.requestEnded);
+    return userData.adapter;
+}
+
+inline WGPUDevice requestDeviceSync(WGPUInstance instance, WGPUAdapter adapter, WGPUDeviceDescriptor const* descriptor) {
+    struct UserData {
+        WGPUDevice device  = nullptr;
+        bool requestEnded    = false;
+    };
+    UserData userData;
+
+    wgpuAdapterRequestDevice(adapter, descriptor,
+        [](WGPURequestDeviceStatus status, WGPUDevice device, WGPUStringView message, void* pUserData) {
+            UserData& userDataReference = *reinterpret_cast<UserData*>(pUserData);
+            if (status == WGPURequestDeviceStatus_Success)
+                userDataReference.device = device;
+            else
+                std::cout << "Could not get WebGPU Device: " << message.data << std::endl;
+            userDataReference.requestEnded = true;
+        },
+        &userData
+    );
+
+    while (!userData.requestEnded) wgpuInstanceProcessEvents(instance);
+    assert(userData.requestEnded);
+    return userData.device;
 }
 
 #endif //TRAININGHOUR_UTILITIES_H

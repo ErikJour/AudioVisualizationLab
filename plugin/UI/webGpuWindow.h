@@ -8,6 +8,7 @@
 #include<webgpu/webgpu.h>
 #include <iostream>
 #include "Utilities.h"
+#include "Scene.h"
 
 
 class WebGpuWindow {
@@ -72,6 +73,8 @@ private:
     WGPUBlendState                  mBlendState         = {};
     WGPUColorTargetState            mColorTarget        = {};
     WGPUDepthStencilState           mDepthStencilState  = {};
+
+    Scene mScene;
 };
 
 

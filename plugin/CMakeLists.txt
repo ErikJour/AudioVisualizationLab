@@ -40,6 +40,7 @@ target_sources(TrainingHour
         dsp/TrainingNoise.cpp
         dsp/TrainingFilter.cpp
         UI/webGpuWindow.cpp
+        UI/Scene.cpp
 )
 
 target_include_directories(TrainingHour
