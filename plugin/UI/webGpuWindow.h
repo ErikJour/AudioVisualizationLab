@@ -21,12 +21,12 @@ public:
     bool createQueue();
     void configurePipeline();
     bool initialize();
-    bool initSurface(void* nativeHandle, uint32_t width, uint32_t height);
+    bool initSurface(double contentScale, uint32_t width, uint32_t height);
     void onResize(uint32_t width, uint32_t height);
     void terminate();
     static void setFeatures(WGPUAdapter adapter);
-    void getAdapter(WGPUAdapter adapter, const WGPUAdapterInfo& properties);
-    static void getLimits(WGPUAdapter adapter, WGPUSupportedLimits &limits);
+    void getAdapter(WGPUAdapter adapter, const WGPUAdapterInfo &properties);
+    static void getLimits(WGPUAdapter adapter, const WGPUSupportedLimits &limits);
 
     // Scene& getScene() { return mScene; }
     [[nodiscard]] bool hasSurface() const { return mSurface != nullptr; }
