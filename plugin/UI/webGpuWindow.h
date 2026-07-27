@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Utilities.h"
 #include "Scene.h"
+#include "GpuSurface.h"
 
 
 class WebGpuWindow {
@@ -58,6 +59,7 @@ private:
     static WGPURequiredLimits GetRequiredLimit(WGPUAdapter adapter);
 
     //Variables
+    void*           mNativeView = nullptr;
     WGPUInstance    mInstance   = nullptr;
     WGPUAdapter     mAdapter    = nullptr;
     WGPUDevice      mDevice     = nullptr;

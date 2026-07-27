@@ -41,6 +41,7 @@ target_sources(TrainingHour
         dsp/TrainingFilter.cpp
         UI/webGpuWindow.cpp
         UI/Scene.cpp
+
 )
 
 target_include_directories(TrainingHour
@@ -49,6 +50,7 @@ target_include_directories(TrainingHour
         source
         dsp
         UI
+        UI/shaders
 )
 
 target_link_libraries(TrainingHour

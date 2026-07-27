@@ -82,6 +82,14 @@ bool WebGpuWindow::createDevice()
     return true;
 }
 
+bool WebGpuWindow::createQueue() {
+    mQueue = wgpuDeviceGetQueue(mDevice);
+    if (!mQueue) { return false; }
+    std::cout << "WGPUQueue: " << mQueue << std::endl;
+    return true;
+}
+
+
 void WebGpuWindow::configurePipeline()
 {
     mFragmentState                                          = mScene.getFragmentState();
@@ -130,7 +138,7 @@ bool WebGpuWindow::initialize()
     if (!createAdapter())   return false;
     if (!createDevice())    return false;
     if (!createQueue())     return false;
-    //mScene.init(mDevice, mQueue);
+    mScene.init(mDevice, mQueue);
     // if (!mScene.createShader()) return false;
     configurePipeline();
     // mScene.configureVertexLayout();
@@ -141,10 +149,11 @@ bool WebGpuWindow::initialize()
 bool WebGpuWindow::initSurface(const double contentScale, uint32_t width, uint32_t height)
 {
     std::cout << "Init surface called" << width << "x" << height << std::endl;
-    const MetalSurface metal = createMetalSurface(mInstance, contentScale);
-    mSurface = metal.surface;
-    mNativeView = metal.view;
+    const MetalSurface metal    = createMetalSurface(mInstance, contentScale);
+    mSurface                    = metal.surface;
+    mNativeView                 = metal.view;
     if (!mSurface) { std::cerr << " Surface creation failed" << std::endl; return false;}
+
     applySurfaceConfig(width, height);
     mScene.setSurface(mSurface);
     mScene.setSurfaceFormat(mSurfaceFormat);
@@ -185,16 +194,13 @@ void WebGpuWindow::getAdapter(const WGPUAdapter adapter, const WGPUAdapterInfo& 
     std::cout << "Adapter backend: 0x" << std::hex << properties.backendType << std::dec << std::endl;
 }
 
-void WebGpuWindow::getLimits(const WGPUAdapter adapter, const WGPUSupportedLimits &limits)
+void WebGpuWindow::getLimits(const WGPUAdapter /*adapter*/, const WGPUSupportedLimits &limits)
 {
-    bool success = wgpuAdapterGetLimits(adapter, &limits) == WGPUStatus_Success;
-    if (success) {
-        std:: cout << "Adapter limits: " << std::endl;
-        std::cout << " - maxTextureDimension1D: " << limits.limits.maxTextureDimension1D << std::endl;
-        std::cout << " - maxTextureDimension2D: " << limits.limits.maxTextureDimension2D << std::endl;
-        std::cout << " - maxTextureDimension3D: " << limits.limits.maxTextureDimension3D << std::endl;
-        std::cout << " - maxTextureArrayLayers: " << limits.limits.maxTextureArrayLayers << std::endl;
-    }
+    std:: cout << "Adapter limits: " << std::endl;
+    std::cout << " - maxTextureDimension1D: " << limits.limits.maxTextureDimension1D << std::endl;
+    std::cout << " - maxTextureDimension2D: " << limits.limits.maxTextureDimension2D << std::endl;
+    std::cout << " - maxTextureDimension3D: " << limits.limits.maxTextureDimension3D << std::endl;
+    std::cout << " - maxTextureArrayLayers: " << limits.limits.maxTextureArrayLayers << std::endl;
 }
 
 void WebGpuWindow::setDefault(WGPULimits &limits) {
