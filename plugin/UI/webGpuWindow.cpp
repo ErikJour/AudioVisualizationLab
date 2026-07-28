@@ -127,7 +127,7 @@ void WebGpuWindow::configurePipeline()
     mBlendState.alpha.srcFactor                             = WGPUBlendFactor_Zero;
     mBlendState.alpha.dstFactor                             = WGPUBlendFactor_One;
     mBlendState.alpha.operation                             = WGPUBlendOperation_Add;
-    //mScene.setPipelineDescriptor((mPipelineDescriptor);
+    mScene.setPipelineDesc(mPipelineDescriptor);
 }
 
 bool WebGpuWindow::initialize()
@@ -146,7 +146,6 @@ bool WebGpuWindow::initialize()
 
 bool WebGpuWindow::initSurface(const double contentScale, uint32_t width, uint32_t height)
 {
-    std::cout << "Init surface called" << width << "x" << height << std::endl;
     const MetalSurface metal    = createMetalSurface(mInstance, contentScale);
     mSurface                    = metal.surface;
     mNativeView                 = metal.view;

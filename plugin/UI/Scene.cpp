@@ -6,22 +6,22 @@
 
 #include <iostream>
 #include <ostream>
-
-void Scene::init(WGPUDevice device, WGPUQueue queue) { mDevice = device; mQueue = queue; }
-
-void Scene::setSurface(const WGPUSurface surface)    { mSurface = surface; }
-
-void Scene::setSurfaceFormat(const WGPUTextureFormat format) { mSurfaceFormat = format; }
-
-void Scene::setSurfaceSize(uint32_t width, uint32_t height) { mWidth = width; mHeight = height; }
-
-void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc = pipelineDesc; }
+//===================================================================================
+//Setup
+//====================================================================================
+void Scene::init(WGPUDevice device, WGPUQueue queue)                   { mDevice = device; mQueue = queue; }
+void Scene::setSurface(const WGPUSurface surface)                      { mSurface                 = surface; }
+void Scene::setSurfaceFormat(const WGPUTextureFormat format)           { mSurfaceFormat           = format; }
+void Scene::setSurfaceSize(uint32_t width, uint32_t height)            { mWidth = width; mHeight  = height; }
+void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc            = pipelineDesc; }
 
 void Scene::terminate()
 {
     if (mSurface)   { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface = nullptr; }
 }
-
+//===================================================================================
+//Rendering
+//====================================================================================
 bool Scene::createPipeline()
 {
     //====================================================================================
@@ -35,6 +35,7 @@ bool Scene::createPipeline()
     //====================================================================================
     //Rules for sending CPU data to the GPU
     //====================================================================================
+
     static constexpr uint32_t kAlignment      = 256;
     mUniformStride                            = (sizeof(MyUniforms) + kAlignment - 1) & ~(kAlignment - 1);
     WGPUBindGroupLayoutEntry bglEntry         = {};
@@ -58,16 +59,24 @@ bool Scene::createPipeline()
     //====================================================================================
     //Configure Shaders
     //====================================================================================
+
     mColorTarget.format         = mSurfaceFormat; //This is our pixel format
     mColorTarget.blend          = &mBlendState;   //This is our blend format
     mColorTarget.writeMask      = WGPUColorWriteMask_All; //All color channels can be written to
     mPipelineDesc.vertex.module = mShaderModule;
     mFragmentState.module       = mShaderModule;
+
     mFragmentState.entryPoint   = WGPU_STR("fs_main");
+
     mFragmentState.targetCount  = 1;
     mFragmentState.targets      = &mColorTarget;
     mFragmentState.constants    = nullptr;
     mPipelineDesc.fragment      = &mFragmentState;
+    if (!mDevice) {
+        std::cout << "Failed to create device" << std::endl;
+        return false;
+    }
+
     mPipeline                   = wgpuDeviceCreateRenderPipeline(mDevice, &mPipelineDesc);
 
     if (!mPipeline) {
@@ -78,6 +87,7 @@ bool Scene::createPipeline()
     //====================================================================================
     //Allocate GPU Memory
     //====================================================================================
+
     WGPUBufferDescriptor bufferDesc = {};
     bufferDesc.size                 = materialCount * mUniformStride;
     bufferDesc.usage                = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
@@ -94,6 +104,7 @@ bool Scene::createPipeline()
     mBindGroup                      = wgpuDeviceCreateBindGroup(mDevice, &bgDesc);
     updateTexture(mWidth, mHeight);
     wgpuBindGroupLayoutRelease(bglLayout);
+
     return true;
 }
 
@@ -159,7 +170,6 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
     return { surfaceTexture, targetView };
 }
 
-
 void Scene::renderFrame() const {
     //====================================================================================
     //Add reloadable shader setup here
@@ -179,6 +189,10 @@ void Scene::renderFrame() const {
     //====================================================================================
     wgpuSurfacePresent(mSurface);
 }
+
+//===================================================================================
+//Meshes
+//====================================================================================
 
 
 
