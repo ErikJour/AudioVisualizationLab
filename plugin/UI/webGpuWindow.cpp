@@ -4,8 +4,6 @@
 
 #include "webGpuWindow.h"
 
-#define WGPU_STR(s) WGPUStringView{s, sizeof(s) -1}
-
 WebGpuWindow::WebGpuWindow()  = default;
 WebGpuWindow::~WebGpuWindow() = default;
 
@@ -245,5 +243,29 @@ WGPURequiredLimits WebGpuWindow::GetRequiredLimit(WGPUAdapter adapter) {
     requiredLimits.limits.maxVertexBufferArrayStride    = 9 * sizeof(float);
     requiredLimits.limits.maxInterStageShaderComponents = 3;
     return requiredLimits;
+}
+
+void WebGpuWindow::applySurfaceConfig(const uint32_t width, const uint32_t height) {
+    if (mSurfaceFormat == WGPUTextureFormat_Undefined) {
+        WGPUSurfaceCapabilities caps = {};
+        wgpuSurfaceGetCapabilities(mSurface, mAdapter, &caps);
+        mSurfaceFormat = caps.formats[0];
+        wgpuSurfaceCapabilitiesFreeMembers(caps);
+        wgpuAdapterRelease(mAdapter);
+        mAdapter = nullptr;
+    }
+    //=========================================================
+    //Swap chain setup
+    //========================================================
+    WGPUSurfaceConfiguration config = {};
+    config.width                    = width;
+    config.height                   = height;
+    config.device                   = mDevice;
+    config.format                   = mSurfaceFormat;                    //Sets up channels, r/g/b/a, etc
+    config.usage                    = WGPUTextureUsage_RenderAttachment; //We are using these textures for a render pass
+    config.presentMode              = WGPUPresentMode_Fifo;              //Immediate is also an option but might reduce quality
+    config.alphaMode                = WGPUCompositeAlphaMode_Auto;
+
+    wgpuSurfaceConfigure(mSurface, &config);
 }
 

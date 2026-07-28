@@ -10,6 +10,8 @@
 #include "Utilities.h"
 #include "Scene.h"
 #include "GpuSurface.h"
+// #define WEBGPU_CPP_IMPLEMENTATION
+// #include <webgpu/webgpu.hpp>
 
 
 class WebGpuWindow {
@@ -28,30 +30,14 @@ public:
     static void setFeatures(WGPUAdapter adapter);
     void getAdapter(WGPUAdapter adapter, const WGPUAdapterInfo &properties);
     static void getLimits(WGPUAdapter adapter, const WGPUSupportedLimits &limits);
+    void applySurfaceConfig(uint32_t width,uint32_t height);
 
-    // Scene& getScene() { return mScene; }
-    [[nodiscard]] bool hasSurface() const { return mSurface != nullptr; }
+
+    Scene& getScene() { return mScene; }
+    [[nodiscard]] bool hasSurface()     const { return mSurface != nullptr; }
+    [[nodiscard]] void* getNativeView() const { return mNativeView; }
 private:
-    void applySurfaceConfig(const uint32_t width, const uint32_t height) {
-        if (mSurfaceFormat == WGPUTextureFormat_Undefined) {
-            WGPUSurfaceCapabilities caps = {};
-            wgpuSurfaceGetCapabilities(mSurface, mAdapter, &caps);
-            mSurfaceFormat = caps.formats[0];
-            wgpuSurfaceCapabilitiesFreeMembers(caps);
-            wgpuAdapterRelease(mAdapter);
-            mAdapter = nullptr;
-        }
-        WGPUSurfaceConfiguration config = {};
-        config.device = mDevice;
-        config.format = mSurfaceFormat;
-        config.usage = WGPUTextureUsage_RenderAttachment;
-        config.width = width;
-        config.height = height;
-        config.presentMode = WGPUPresentMode_Immediate;
-        config.alphaMode = WGPUCompositeAlphaMode_Auto;
 
-        wgpuSurfaceConfigure(mSurface, &config);
-    }
 
     static void setDefault(WGPULimits &limits);
     static void setDefault(WGPUStencilFaceState &stencilFaceState);

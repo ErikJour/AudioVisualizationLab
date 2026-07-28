@@ -33,6 +33,11 @@ if (APPLE)
     )
 endif()
 
+if(APPLE)
+    target_sources(TrainingHour PRIVATE source/GpuSurface.mm)
+    target_link_libraries(TrainingHour PRIVATE "-framework QuartzCore" "-framework Metal")
+endif()
+
 target_sources(TrainingHour
         PRIVATE
         source/TrainingHourEditor.cpp

@@ -15,6 +15,8 @@ void Scene::setSurfaceFormat(const WGPUTextureFormat format) { mSurfaceFormat = 
 
 void Scene::setSurfaceSize(uint32_t width, uint32_t height) { mWidth = width; mHeight = height; }
 
+void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc = pipelineDesc; }
+
 void Scene::terminate()
 {
     if (mSurface)   { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface = nullptr; }
@@ -44,7 +46,7 @@ bool Scene::createPipeline()
     WGPUBindGroupLayoutDescriptor bglDesc     = {};
     bglDesc.entryCount                        = 1;
     bglDesc.entries                           = &bglEntry;
-    const WGPUBindGroupLayout bglLayout       = nullptr;
+    const WGPUBindGroupLayout bglLayout       = wgpuDeviceCreateBindGroupLayout(mDevice, &bglDesc);
     WGPUPipelineLayoutDescriptor pipelineDesc = {};
     pipelineDesc.bindGroupLayoutCount         = 1;
     pipelineDesc.bindGroupLayouts             = &bglLayout;
@@ -66,11 +68,13 @@ bool Scene::createPipeline()
     mFragmentState.targets      = &mColorTarget;
     mFragmentState.constants    = nullptr;
     mPipelineDesc.fragment      = &mFragmentState;
-    mPipeline = wgpuDeviceCreateRenderPipeline(mDevice, &mPipelineDesc);
+    mPipeline                   = wgpuDeviceCreateRenderPipeline(mDevice, &mPipelineDesc);
+
     if (!mPipeline) {
         std::cerr << "Failed to create render pipeline." << std::endl;
         return false;
     }
+
     //====================================================================================
     //Allocate GPU Memory
     //====================================================================================
@@ -88,10 +92,94 @@ bool Scene::createPipeline()
     bgDesc.entryCount               = 1;
     bgDesc.entries                  = &bgEntry;
     mBindGroup                      = wgpuDeviceCreateBindGroup(mDevice, &bgDesc);
-    updateDepthTexture(mWidth, mHeight);
+    updateTexture(mWidth, mHeight);
     wgpuBindGroupLayoutRelease(bglLayout);
     return true;
 }
+
+void Scene::updateTexture(const uint32_t width, const uint32_t height)
+{
+    //====================================================================================
+    //Assign width and height
+    //====================================================================================
+    mWidth                             = width;
+    mHeight                            = height;
+    //====================================================================================
+    //Release texture view and texture
+    //====================================================================================
+    if (mTextureView) { wgpuTextureViewRelease(mTextureView); mTextureView = nullptr; }
+    if (mTexture)     { wgpuTextureRelease(mTexture);         mTexture     = nullptr; }
+    //====================================================================================
+    //Setup texture and texture view descriptors
+    //====================================================================================
+    WGPUTextureDescriptor desc         = {};
+    desc.usage                         = WGPUTextureUsage_RenderAttachment;
+    desc.dimension                     = WGPUTextureDimension_2D;
+    desc.size                       = { mWidth, mHeight, 1 };
+    desc.format                        = WGPUTextureFormat_Depth24Plus;
+    desc.mipLevelCount                 = 1;
+    desc.sampleCount                   = 1;
+    WGPUTextureViewDescriptor descView = {};
+    descView.format                    = WGPUTextureFormat_Depth24Plus;
+    descView.dimension                 = WGPUTextureViewDimension_2D;
+    descView.mipLevelCount             = 1;
+    descView.arrayLayerCount           = 1;
+    descView.aspect                    = WGPUTextureAspect_DepthOnly;
+    //====================================================================================
+    //Assign texture and texture view
+    //====================================================================================
+    mTexture                           = wgpuDeviceCreateTexture(mDevice, &desc);
+    mTextureView                       = wgpuTextureCreateView(mTexture, &descView);
+}
+
+std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() const {
+    //====================================================================================
+    //Setup our surface to draw into - turn this into a single function that returns mSurfaceTexture and mTargetView
+    //====================================================================================
+    WGPUSurfaceTexture surfaceTexture = {};
+    wgpuSurfaceGetCurrentTexture(mSurface, &surfaceTexture);
+    if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_Success) {
+        return { surfaceTexture, nullptr };
+    }
+    //====================================================================================
+    //Let's format our blank texture
+    //====================================================================================
+    WGPUTextureViewDescriptor viewDescriptor = {};
+    viewDescriptor.nextInChain               = nullptr;
+    viewDescriptor.label                     = { "Surface texture view", 20};
+    viewDescriptor.format                    = mSurfaceFormat;
+    viewDescriptor.dimension                 = WGPUTextureViewDimension_2D;
+    viewDescriptor.baseMipLevel              = 0;
+    viewDescriptor.mipLevelCount             = 1;
+    viewDescriptor.baseArrayLayer            = 0;
+    viewDescriptor.arrayLayerCount           = 1;
+    viewDescriptor.aspect                    = WGPUTextureAspect_All;
+    const WGPUTextureView targetView         = wgpuTextureCreateView(surfaceTexture.texture, &viewDescriptor);
+
+    return { surfaceTexture, targetView };
+}
+
+
+void Scene::renderFrame() const {
+    //====================================================================================
+    //Add reloadable shader setup here
+    //====================================================================================
+    if (!mPipeline) return;
+    if (!mSurface)  return;
+    //====================================================================================
+    //Get the surface texture and the target view
+    //====================================================================================
+    auto [ surfaceTexture, targetView ] = getNextSurfaceViewData();
+    //====================================================================================
+    //Release Resources
+    //====================================================================================
+    wgpuTextureViewRelease(targetView);
+    //====================================================================================
+    //Present frame
+    //====================================================================================
+    wgpuSurfacePresent(mSurface);
+}
+
 
 
 

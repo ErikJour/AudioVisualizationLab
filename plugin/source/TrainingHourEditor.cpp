@@ -6,26 +6,57 @@ TrainingHourProcessorEditor::TrainingHourProcessorEditor (TrainingHourAudioProce
     : AudioProcessorEditor (&p), processorRef (p)
 {
     juce::ignoreUnused (processorRef);
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
+    constexpr int initWidth = 800;
+    constexpr int initHeight = 450;
     setSize (400, 300);
+    mWebGpuWindow.initialize();
 }
 
-TrainingHourProcessorEditor::~TrainingHourProcessorEditor() = default;
+TrainingHourProcessorEditor::~TrainingHourProcessorEditor()
+{
+    stopTimer();
+    mWebGpuWindow.terminate();
+}
 
 //==============================================================================
-void TrainingHourProcessorEditor::paint (juce::Graphics& g)
+void TrainingHourProcessorEditor::parentHierarchyChanged()
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    AudioProcessorEditor::parentHierarchyChanged();
 
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Filter Time", getLocalBounds(), juce::Justification::centred, 1);
+    if (mWebGpuWindow.hasSurface() || getPeer() == nullptr)
+        return;
+    const auto* webGpuDisplay = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay();
+    const double scale        = webGpuDisplay ? webGpuDisplay->scale : 1.0;
+    const auto width          = static_cast<uint32_t>(getWidth() * scale);
+    const auto height         = static_cast<uint32_t>(getHeight() * scale);
+    if (!mWebGpuWindow.initSurface(scale, width, height))
+        return;
+#if JUCE_MAC
+    mMetalView.setInterceptsMouseClicks(false, false);
+    addAndMakeVisible(&mMetalView);
+    mMetalView.setView(mWebGpuWindow.getNativeView());
+    mMetalView.setBounds(getLocalBounds());
+#endif
+    mStartTimeMs      = juce::Time::getMillisecondCounterHiRes();
+    mStartTimeSet     = true;
+    mConfiguredWidth  = width;
+    mConfiguredHeight = height;
+    startTimerHz(60);
+    setResizable (false, false); //temproary
 }
-
 void TrainingHourProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+   if (!mWebGpuWindow.hasSurface()) return;
+#if JUCE_MAC
+    mMetalView.setBounds(getLocalBounds());
+    #endif
 }
+
+void TrainingHourProcessorEditor::timerCallback()
+{
+    if (mStartTimeSet) {
+        // const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
+        mWebGpuWindow.getScene().renderFrame();
+    }
+}
+
