@@ -19,8 +19,7 @@ bool WebGpuWindow::createInstance()
     static constexpr auto toggleName        = "enable_immediate_error_handling";
     dawnToggles.enabledToggles              = &toggleName;
     descriptor.nextInChain                  = &dawnToggles.chain;
-    mInstance
-    = wgpuCreateInstance(&descriptor);
+    mInstance                               = wgpuCreateInstance(&descriptor);
 
     if (!mInstance) {
         std::cerr << "Failed to crearte the WGPUInstance" << std::endl;
@@ -93,7 +92,9 @@ void WebGpuWindow::configurePipeline()
     mFragmentState                                          = mScene.getFragmentState();
     mColorTarget                                            = mScene.getColorTarget();
     mBlendState                                             = mScene.getBlendState();
+    //================================================================================
     //Pipeline
+    //================================================================================
     mPipelineDescriptor.nextInChain                         = nullptr;
     mPipelineDescriptor.layout                              = nullptr;
     mPipelineDescriptor.vertex.bufferCount                  = 0;
@@ -107,20 +108,26 @@ void WebGpuWindow::configurePipeline()
     mPipelineDescriptor.primitive.cullMode                  = WGPUCullMode_None;
     mPipelineDescriptor.fragment                            = &mFragmentState;
     mPipelineDescriptor.depthStencil                        = &mDepthStencilState;
-    setDefault(mDepthStencilState);
-    mPipelineDescriptor.multisample.count                   = kMSAASamples;
+    mPipelineDescriptor.multisample.count                   = 1;
     mPipelineDescriptor.multisample.mask                    = ~0u;
     mPipelineDescriptor.multisample.alphaToCoverageEnabled  = false;;
+    setDefault(mDepthStencilState);
+    //================================================================================
     //Depth Stencil
+    //================================================================================
     mDepthStencilState.format                               = WGPUTextureFormat_Depth24Plus;
     mDepthStencilState.depthCompare                         = WGPUCompareFunction_Less;
     mDepthStencilState.depthWriteEnabled                    = WGPUOptionalBool_True;
     mDepthStencilState.stencilReadMask                      = 0;
     mDepthStencilState.stencilWriteMask                     = 0;
+    //================================================================================
     //Color Target
+    //================================================================================
     mColorTarget.blend                                      = &mBlendState;
     mColorTarget.writeMask                                  = WGPUColorWriteMask_All;
+    //================================================================================
     //Blend State
+    //================================================================================
     mBlendState.color.srcFactor                             = WGPUBlendFactor_SrcAlpha;
     mBlendState.color.dstFactor                             = WGPUBlendFactor_OneMinusSrcAlpha;
     mBlendState.color.operation                             = WGPUBlendOperation_Add;
@@ -140,12 +147,12 @@ bool WebGpuWindow::initialize()
     if (!mScene.createShader()) return false;
     configurePipeline();
     mScene.configureVertexLayout();
-    // mScene.initializeScene();
     return true;
 }
 
 bool WebGpuWindow::initSurface(const double contentScale, uint32_t width, uint32_t height)
 {
+    std::cout << "Init surface called with: " << width << " x " << height << std::endl;
     const MetalSurface metal    = createMetalSurface(mInstance, contentScale);
     mSurface                    = metal.surface;
     mNativeView                 = metal.view;

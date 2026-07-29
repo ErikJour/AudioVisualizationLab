@@ -6,9 +6,9 @@ TrainingHourProcessorEditor::TrainingHourProcessorEditor (TrainingHourAudioProce
     : AudioProcessorEditor (&p), processorRef (p)
 {
     juce::ignoreUnused (processorRef);
-    constexpr int initWidth = 800;
+    constexpr int initWidth  = 800;
     constexpr int initHeight = 450;
-    setSize (400, 300);
+    setSize (initWidth, initHeight);
     mWebGpuWindow.initialize();
 }
 
@@ -25,6 +25,7 @@ void TrainingHourProcessorEditor::parentHierarchyChanged()
 
     if (mWebGpuWindow.hasSurface() || getPeer() == nullptr)
         return;
+
     const auto* webGpuDisplay = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay();
     const double scale        = webGpuDisplay ? webGpuDisplay->scale : 1.0;
     const auto width          = static_cast<uint32_t>(getWidth() * scale);
@@ -42,7 +43,7 @@ void TrainingHourProcessorEditor::parentHierarchyChanged()
     mConfiguredWidth  = width;
     mConfiguredHeight = height;
     startTimerHz(60);
-    setResizable (false, false); //temproary
+    setResizable (false, false);
 }
 void TrainingHourProcessorEditor::resized()
 {

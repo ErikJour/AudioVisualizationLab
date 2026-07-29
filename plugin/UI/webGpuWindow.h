@@ -25,7 +25,6 @@ public:
     void configurePipeline();
     bool initialize();
     bool initSurface(double contentScale, uint32_t width, uint32_t height);
-    void onResize(uint32_t width, uint32_t height);
     void terminate();
     static void setFeatures(WGPUAdapter adapter);
     void getAdapter(WGPUAdapter adapter, const WGPUAdapterInfo &properties);
