@@ -60,4 +60,13 @@ inline WGPUDevice requestDeviceSync(WGPUInstance instance, WGPUAdapter adapter, 
     return userData.device;
 }
 
+#ifdef DEBUG
+inline std::filesystem::file_time_type latestWriteTime(const std::vector<std::filesystem::path>& paths) {
+    std::filesystem::file_time_type latest{};
+    for (const auto& p : paths)
+        latest = std::max(latest, std::filesystem::last_write_time(p));
+    return latest;
+}
+#endif
+
 #endif //TRAININGHOUR_UTILITIES_H

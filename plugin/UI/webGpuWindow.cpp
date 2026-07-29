@@ -137,9 +137,9 @@ bool WebGpuWindow::initialize()
     if (!createDevice())    return false;
     if (!createQueue())     return false;
     mScene.init(mDevice, mQueue);
-    // if (!mScene.createShader()) return false;
+    if (!mScene.createShader()) return false;
     configurePipeline();
-    // mScene.configureVertexLayout();
+    mScene.configureVertexLayout();
     // mScene.initializeScene();
     return true;
 }

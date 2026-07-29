@@ -9,19 +9,76 @@
 //===================================================================================
 //Setup
 //====================================================================================
-void Scene::init(WGPUDevice device, WGPUQueue queue)                   { mDevice = device; mQueue = queue; }
-void Scene::setSurface(const WGPUSurface surface)                      { mSurface                 = surface; }
-void Scene::setSurfaceFormat(const WGPUTextureFormat format)           { mSurfaceFormat           = format; }
-void Scene::setSurfaceSize(uint32_t width, uint32_t height)            { mWidth = width; mHeight  = height; }
+void Scene::init(WGPUDevice device, WGPUQueue queue)                   { mDevice = device; mQueue = queue;       }
+void Scene::setSurface(const WGPUSurface surface)                      { mSurface                 = surface;      }
+void Scene::setSurfaceFormat(const WGPUTextureFormat format)           { mSurfaceFormat           = format;       }
+void Scene::setSurfaceSize(uint32_t width, uint32_t height)            { mWidth = width; mHeight  = height;       }
+void Scene::setShaderModule(WGPUShaderModule shaderModule)             { mShaderModule            = shaderModule; }
 void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc            = pipelineDesc; }
-
 void Scene::terminate()
 {
     if (mSurface)   { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface = nullptr; }
 }
 //===================================================================================
+//Shader
+//===================================================================================
+bool Scene::createShader() {
+#ifdef DEBUG
+    mShaderPaths = getShaderPaths();
+    mLastShaderWriteTime = latestWriteTime(mShaderPaths);
+    mShaderModule = ResourceManager::loadShaderModules(mShaderPaths, mDevice);
+#endif
+    if (!mShaderModule) {
+        std::cerr << "Failed to create shader module." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+void Scene::reloadShader()
+{
+    const WGPUShaderModule newShaderModule = ResourceManager::loadShaderModules(mShaderPaths, mDevice);
+    if (!newShaderModule) {
+        std::cerr << "Shader compile failed" << std::endl;
+        return;
+    }
+    wgpuShaderModuleRelease(mShaderModule);
+    mShaderModule = newShaderModule;
+    mPipelineDesc.vertex.module = mShaderModule;
+    createPipeline();
+    std::cout << "Shader reloaded" << std::endl;
+}
+//====================================================================================
 //Rendering
 //====================================================================================
+void Scene::configureVertexLayout() {
+    //==========================================================
+    //Position
+    //=========================================================
+    mVertexAttributes[0].shaderLocation = 0;
+    mVertexAttributes[0].format         = WGPUVertexFormat_Float32x3;
+    mVertexAttributes[0].offset         = 0;
+    //==========================================================
+    //Normal
+    //=========================================================
+    mVertexAttributes[1].shaderLocation = 1;
+    mVertexAttributes[1].format         = WGPUVertexFormat_Float32x3;
+    mVertexAttributes[1].offset         = 3 * sizeof(float);;
+    //==========================================================
+    //Color
+    //=========================================================
+    mVertexAttributes[2].shaderLocation = 2;
+    mVertexAttributes[2].format         = WGPUVertexFormat_Float32x3;
+    mVertexAttributes[2].offset         = 6 * sizeof(float);
+
+    mVertexBufferLayout.resize(1);
+    mVertexBufferLayout[0].attributeCount = 3;
+    mVertexBufferLayout[0].attributes     = mVertexAttributes.data();
+    mVertexBufferLayout[0].arrayStride    = 9 * sizeof(float);
+    mVertexBufferLayout[0].stepMode = WGPUVertexStepMode_Vertex;
+    mPipelineDesc.vertex.bufferCount = 1;
+    mPipelineDesc.vertex.buffers = mVertexBufferLayout.data();
+}
 bool Scene::createPipeline()
 {
     //====================================================================================

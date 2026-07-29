@@ -55,7 +55,7 @@ target_include_directories(TrainingHour
         source
         dsp
         UI
-        UI/shaders
+        shaders
 )
 
 target_link_libraries(TrainingHour
@@ -75,6 +75,27 @@ target_compile_definitions(TrainingHour
             JUCE_USE_CURL=0
             JUCE_VST3_CAN_REPLACE_VST2=0
 )
+
+#==============================
+#Shader files
+#==============================
+set(SHADER_FILES
+        "shaders/vertex_main.wgsl"
+        "shaders/fragment_main.wgsl"
+)
+
+set(SHADER_SOURCE "")
+foreach(SHADER_FILE ${SHADER_FILES})
+    file(READ "${SHADER_FILE}" SHADER_CHUNK)
+    string(APPEND SHADER_SOURCE "${SHADER_CHUNK}\n")
+endforeach()
+
+target_compile_definitions(TrainingHour
+        PRIVATE
+        DEBUG_SHADER_DIR="${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+)
+
+target_include_directories(TrainingHour PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 
 
