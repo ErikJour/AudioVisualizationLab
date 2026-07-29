@@ -35,7 +35,8 @@ public:
     void setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc);
     bool createPipeline();
     void updateTexture(uint32_t width, uint32_t height);
-    void renderFrame() const;
+    void setUniforms(float time);
+    void renderFrame(float time);
     std::pair<WGPUSurfaceTexture, WGPUTextureView> getNextSurfaceViewData() const;
 
 

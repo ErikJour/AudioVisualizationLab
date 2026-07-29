@@ -75,9 +75,10 @@ void Scene::configureVertexLayout() {
     mVertexBufferLayout[0].attributeCount = 3;
     mVertexBufferLayout[0].attributes     = mVertexAttributes.data();
     mVertexBufferLayout[0].arrayStride    = 9 * sizeof(float);
-    mVertexBufferLayout[0].stepMode = WGPUVertexStepMode_Vertex;
-    mPipelineDesc.vertex.bufferCount = 1;
-    mPipelineDesc.vertex.buffers = mVertexBufferLayout.data();
+    mVertexBufferLayout[0].stepMode       = WGPUVertexStepMode_Vertex;
+
+    mPipelineDesc.vertex.bufferCount      = 1;
+    mPipelineDesc.vertex.buffers          = mVertexBufferLayout.data();
 }
 bool Scene::createPipeline()
 {
@@ -146,7 +147,8 @@ bool Scene::createPipeline()
     //====================================================================================
 
     WGPUBufferDescriptor bufferDesc = {};
-    bufferDesc.size                 = materialCount * mUniformStride;
+    bufferDesc.label               = { "Uniform buffer", strlen("Uniform buffer") };
+    bufferDesc.size                 = /*materialCount * */ mUniformStride;
     bufferDesc.usage                = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
     mUniformBuffer                  = wgpuDeviceCreateBuffer(mDevice, &bufferDesc);
     WGPUBindGroupEntry bgEntry      = {};
@@ -227,12 +229,18 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
     return { surfaceTexture, targetView };
 }
 
-void Scene::renderFrame() const {
+void Scene::setUniforms(const float time)
+{
+    mUniforms.time = time;
+}
+
+void Scene::renderFrame(const float time) {
     //====================================================================================
     //Add reloadable shader setup here
     //====================================================================================
     if (!mPipeline) return;
     if (!mSurface)  return;
+    setUniforms(time);
     //====================================================================================
     //Get the surface texture and the target view
     //====================================================================================

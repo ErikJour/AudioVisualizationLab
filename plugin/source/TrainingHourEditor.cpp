@@ -55,8 +55,8 @@ void TrainingHourProcessorEditor::resized()
 void TrainingHourProcessorEditor::timerCallback()
 {
     if (mStartTimeSet) {
-        // const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
-        mWebGpuWindow.getScene().renderFrame();
+        const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
+        mWebGpuWindow.getScene().renderFrame(elapsed);
     }
 }
 

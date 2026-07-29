@@ -4,4 +4,8 @@
 
 #pragma once
 
-struct MyUniforms {};
+struct MyUniforms {
+    float time;
+};
+
+static_assert(sizeof(MyUniforms) % 4 == 0);

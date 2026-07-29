@@ -133,9 +133,9 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-   noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
-    allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+   // noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+   //
+   //  allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
 
 
 }
