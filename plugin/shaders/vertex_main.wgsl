@@ -1,15 +1,24 @@
+//=================================================
+//Vertex Shader
+//=================================================
+fn projectPerspective(worldPos: vec3f) -> vec4f {
+    return /*u.viewProjMatrix * */ vec4f(worldPos, 1.0);
+}
+
 @vertex
-fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4f {
+fn vs_main(in: VertexInput) -> VertexOutput {
+    var out      : VertexOutput;
+    var position = in.position;
 
-        var p = vec2f(0.0, 0.0);
-        if (in_vertex_index == 0u) {
-            p = vec2f(-0.5, -0.5);
-        } else if (in_vertex_index == 1u) {
-            p = vec2f (0.5, -0.5);
-        } else {
-            p = vec2f(0.0, 0.5);
-        }
+    switch u.materialId {
+        case MAT_PLANE: { out.clipPos = vertexPlane        (&position); }
+        default:        { out.clipPos = projectPerspective (position);  }
+    }
 
-    return vec4f(p, 0.0, 1.0);
+    out.color    = in.color;
+    out.worldPos = position;
+    out.normal   = in.normal;
+
+    return out;
 }
 

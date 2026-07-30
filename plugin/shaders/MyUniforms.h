@@ -3,9 +3,13 @@
 //
 
 #pragma once
+#include <cstdint>
+
+static constexpr uint32_t MAT_PLANE = 0;
 
 struct MyUniforms {
-    float time;
+    float    time;
+    uint32_t materialId;
 };
 
 static_assert(sizeof(MyUniforms) % 4 == 0);

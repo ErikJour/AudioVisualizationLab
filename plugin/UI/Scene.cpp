@@ -17,7 +17,12 @@ void Scene::setShaderModule(WGPUShaderModule shaderModule)             { mShader
 void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc            = pipelineDesc; }
 void Scene::terminate()
 {
-    if (mSurface)   { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface = nullptr; }
+    if (mPlaneIndexBuffer) { wgpuBufferRelease(mPlaneIndexBuffer);                            mPlaneIndexBuffer  = nullptr; }
+    if (mPlaneVertexBuffer) { wgpuBufferRelease(mPlaneVertexBuffer);                          mPlaneVertexBuffer = nullptr; }
+    if (mBindGroup)         { wgpuBindGroupRelease(mBindGroup);                               mBindGroup         = nullptr; }
+    if (mUniformBuffer)     { wgpuBufferRelease(mUniformBuffer);                              mUniformBuffer     = nullptr; }
+    if (mPipeline)          { wgpuRenderPipelineRelease(mPipeline);                           mPipeline          = nullptr; }
+    if (mSurface)           { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface           = nullptr; }
 }
 //===================================================================================
 //Shader
@@ -146,7 +151,7 @@ bool Scene::createPipeline()
     //====================================================================================
     WGPUBufferDescriptor bufferDesc = {};
     bufferDesc.label               = { "Uniform buffer", strlen("Uniform buffer") };
-    bufferDesc.size                 = /*materialCount * */ mUniformStride;
+    bufferDesc.size                 = materialCount *  mUniformStride;
     bufferDesc.usage                = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
     mUniformBuffer                  = wgpuDeviceCreateBuffer(mDevice, &bufferDesc);
     WGPUBindGroupEntry bgEntry      = {};
@@ -217,9 +222,7 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
     viewDescriptor.label                     = WGPU_STR("Surface texture view");
     viewDescriptor.format                    = mSurfaceFormat;
     viewDescriptor.dimension                 = WGPUTextureViewDimension_2D;
-    // viewDescriptor.baseMipLevel              = 0;
     viewDescriptor.mipLevelCount             = 1;
-    // viewDescriptor.baseArrayLayer            = 0;
     viewDescriptor.arrayLayerCount           = 1;
     viewDescriptor.aspect                    = WGPUTextureAspect_All;
     const WGPUTextureView targetView         = wgpuTextureCreateView(surfaceTexture.texture, &viewDescriptor);
@@ -230,12 +233,29 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
 void Scene::setUniforms(const float time)
 {
     mUniforms.time = time;
+
+    for (uint32_t m = 0; m < materialCount; ++m)
+        wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
+                             m * mUniformStride, &mUniforms, sizeof(MyUniforms));
+
+}
+
+void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) {
+
+    setMeshBuffers(mPlaneVertexBuffer, mPlaneIndexBuffer, mPlaneIndexCount, MAT_PLANE, renderPass);
 }
 
 void Scene::renderFrame(const float time) {
     //====================================================================================
     //Add reloadable shader setup here
     //====================================================================================
+#ifdef DEBUG
+    auto writeTime = latestWriteTime(mShaderPaths);
+    if (writeTime != mLastShaderWriteTime) {
+        mLastShaderWriteTime = writeTime;
+        reloadShader();
+    }
+    #endif
     if (!mPipeline) return;
     if (!mSurface)  return;
     setUniforms(time);
@@ -287,7 +307,7 @@ void Scene::renderFrame(const float time) {
     //Load shaders
     //====================================================================================
     wgpuRenderPassEncoderSetPipeline(renderPass, mPipeline);
-    // wgpuRenderPassEncoderDraw(renderPass, 3, 1, 0, 0);
+    renderMeshes(renderPass);
     //====================================================================================
     //Finish the render
     //====================================================================================
@@ -317,10 +337,44 @@ void Scene::renderFrame(const float time) {
     wgpuDeviceTick(mDevice);
 }
 
+void Scene::initializeScene() {
+
+    initializePlane();
+
+}
+
 //===================================================================================
 //Meshes
 //====================================================================================
+void Scene::setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const
+{
+    if (vertexBuffer && indexBuffer && indexCount > 0) {
+        const uint32_t offset = material * mUniformStride;
+        wgpuRenderPassEncoderSetBindGroup(renderPass, 0, mBindGroup, 1, &offset);
+        wgpuRenderPassEncoderSetVertexBuffer(renderPass, 0, vertexBuffer, 0, wgpuBufferGetSize(vertexBuffer));
+        wgpuRenderPassEncoderSetIndexBuffer(renderPass, indexBuffer, WGPUIndexFormat_Uint16, 0, wgpuBufferGetSize(indexBuffer));
+        wgpuRenderPassEncoderDrawIndexed(renderPass, indexCount, 1, 0, 0, 0);
+    }
+}
 
+void Scene::initializePlane()
+{
+    std::cout << "Initializing plane" << std::endl;
+    std::vector<PlaneVertex> vertices;
+    std::vector<planeIndex>  indices;
+
+    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 16, 16);
+    mPlaneIndexCount = static_cast<uint32_t>(indices.size());
+    WGPUBufferDescriptor bd{};
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+    bd.size = vertices.size() * sizeof(PlaneVertex);
+    mPlaneVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mPlaneVertexBuffer, 0, vertices.data(), bd.size);
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+    bd.size = indices.size() * sizeof(planeIndex);
+    mPlaneIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mPlaneIndexBuffer, 0, indices.data(), bd.size);
+}
 
 
 

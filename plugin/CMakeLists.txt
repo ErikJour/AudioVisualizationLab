@@ -46,6 +46,7 @@ target_sources(TrainingHour
         dsp/TrainingFilter.cpp
         UI/webGpuWindow.cpp
         UI/Scene.cpp
+        geometries/PlaneGeometry.cpp
 
 )
 
@@ -56,6 +57,7 @@ target_include_directories(TrainingHour
         dsp
         UI
         shaders
+        geometries
 )
 
 target_link_libraries(TrainingHour
@@ -82,6 +84,8 @@ target_compile_definitions(TrainingHour
 set(SHADER_FILES
         "shaders/vertex_main.wgsl"
         "shaders/fragment_main.wgsl"
+        "shaders/common.wgsl"
+        "shaders/mat_plane.wgsl"
 )
 
 set(SHADER_SOURCE "")

@@ -12,9 +12,10 @@
 #include "shaderPaths.h"
 #include "Utilities.h"
 #include "ResourceManager.h"
+#include "PlaneGeometry.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
-static constexpr uint32_t materialCount = 0;
+static constexpr uint32_t materialCount = 1;
 
 class Scene {
 public:
@@ -36,13 +37,19 @@ public:
     bool createPipeline();
     void updateTexture(uint32_t width, uint32_t height);
     void setUniforms(float time);
+    void renderMeshes(WGPURenderPassEncoder renderPass);
     void renderFrame(float time);
+    void initializeScene();
+    //===================================================================================
+    //Mesh Work
+    //===================================================================================
+    void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
+    void initializePlane();
+
+    //===================================================================================
+    //Public Getter Functions
+    //===================================================================================
     std::pair<WGPUSurfaceTexture, WGPUTextureView> getNextSurfaceViewData() const;
-
-
-
-
-    //Public Getter Functions======================================================
     WGPUFragmentState    getFragmentState() const { return mFragmentState; }
     WGPUColorTargetState getColorTarget()   const { return mColorTarget; }
     WGPUBlendState       getBlendState()    const { return mBlendState; }
@@ -70,6 +77,11 @@ private:
     std::filesystem::file_time_type mLastShaderWriteTime;
     WGPUTextureView              mTextureView               = nullptr;
     WGPUTexture                  mTexture                   = nullptr;
+
+    //Mesh Buffers
+    WGPUBuffer                   mPlaneVertexBuffer         = nullptr;
+    WGPUBuffer                   mPlaneIndexBuffer          = nullptr;
+    uint32_t                     mPlaneIndexCount           = 0;
 };
 
 

@@ -1,5 +1,8 @@
 @fragment
-fn fs_main() -> @location(0) vec4f {
+fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
-    return vec4f(1.0, 0.4, 1.0, 1.0);
+    switch u.materialId {
+         case MAT_PLANE: { return fragmentPlane(in);          }
+         default:        { return vec4f(1.0, 0.0, 1.0, 1.0);  }
+    }
 }
