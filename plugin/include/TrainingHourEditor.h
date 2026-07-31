@@ -30,6 +30,7 @@ private:
     bool     mStartTimeSet        = false;
     uint32_t mConfiguredWidth     = 0;
     uint32_t mConfiguredHeight    = 0;
+    float    phaseViz             = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourProcessorEditor)
 };

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+
+#include "ErikOscillator.h"
 #include "TrainingNoise.h"
 #include "TrainingFilter.h"
 
@@ -43,10 +45,12 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    float getSinePhase() const;
 
 private:
     TrainingNoise noiseGenerator;
     TrainingFilter allPassFilter;
+    ErikOscillator sineOsc;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourAudioProcessor)
 };

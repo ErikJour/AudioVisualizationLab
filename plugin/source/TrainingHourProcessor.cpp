@@ -16,6 +16,7 @@ TrainingHourAudioProcessor::TrainingHourAudioProcessor()
 
 TrainingHourAudioProcessor::~TrainingHourAudioProcessor()
 {
+    sineOsc.reset();
 }
 
 //==============================================================================
@@ -86,9 +87,9 @@ void TrainingHourAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void TrainingHourAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
+    sineOsc.setSampleRate(sampleRate);
+    sineOsc.setFrequency(300.0f);
+    juce::ignoreUnused ( samplesPerBlock);
 }
 
 void TrainingHourAudioProcessor::releaseResources()
@@ -133,10 +134,11 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    sineOsc.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+
    // noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
    //
    //  allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
 
 }
 
@@ -173,3 +175,6 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new TrainingHourAudioProcessor();
 }
+
+float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase(); }
+
