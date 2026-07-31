@@ -4,7 +4,8 @@
 
 #ifndef TRAININGHOUR_ERIKOSCILLATOR_H
 #define TRAININGHOUR_ERIKOSCILLATOR_H
-
+#include <cstdint>
+#include <cmath>
 
 class ErikOscillator {
 public:
@@ -18,6 +19,11 @@ public:
     float processSample();
     void processBuffer(float *buffer, int numSamples);
     float getPhase() const;
+    //=================================================
+    //Fast sin function
+    //=================================================
+    static float fastSin(uint32_t phase);
+
 
 private:
     double mPhase      = 0.0;
