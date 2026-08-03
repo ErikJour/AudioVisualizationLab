@@ -135,19 +135,21 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
+    //===================================================================================
+    //Sound generation
+    //===================================================================================
     sineOsc.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
-   // noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    // noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    //===================================================================================
+    //Effects
+    //===================================================================================
     delay.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
-   //
    //  allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
+    //===================================================================================
+    //Get the output value
+    //===================================================================================
     float outputValue = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
     outputLevel.store(outputValue * 5.0f, std::memory_order_relaxed);
-
-
 }
 
 //==============================================================================

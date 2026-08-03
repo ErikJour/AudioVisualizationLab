@@ -28,10 +28,16 @@ void ErikDelay::setDelay(int delayInSamples)
 void ErikDelay::processBuffer(float* buffer, const int numSamples) {
     for (int i = 0; i < numSamples; i++)
     {
-        const float inputSample                           = buffer[i];
-        mDelayBuffer[static_cast<size_t>(mWritePosition)] = inputSample;
-        const float outputSample                          = mDelayBuffer[static_cast<size_t>(mReadPosition)];
-        buffer[i]                                         = (inputSample * 0.5f) + (outputSample * 0.5f);
+        const float inputSample                                 = buffer[i];
+        mDelayBuffer[static_cast<size_t>(mWritePosition)]       = inputSample;
+        const float outputSample                                = mDelayBuffer[static_cast<size_t>(mReadPosition)];
+        buffer[i]                                               = (inputSample * 0.5f) + (outputSample * 0.5f);
+        //======================================================================================================
+        //Feedback Loop
+        //======================================================================================================
+        mDelayBuffer[static_cast<size_t>(mWritePosition)]       = buffer[i];
+        buffer[i]                                               = (inputSample * 0.5f) + (outputSample * 0.5f);
+        //======================================================================================================
         mWritePosition++;
         if (mWritePosition >= mDelayBufferLength) { mWritePosition = 0; }
         mReadPosition++;
