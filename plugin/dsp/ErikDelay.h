@@ -17,11 +17,11 @@ public:
     void setDelay(int delayInSamples);
     void processBuffer(float* buffer, int numSamples);
 private:
-    int                    mDelayBufferLength = 0;
-    std::unique_ptr<float> mDelayBuffer         {};
-    int                    mDelayInSamples    = 0;
-    int                    mWritePosition     = 0;
-    int                    mReadPosition      = 0;
+    int                      mDelayBufferLength = 0;
+    std::unique_ptr<float[]> mDelayBuffer         {};
+    int                      mDelayInSamples    = 0;
+    int                      mWritePosition     = 0;
+    int                      mReadPosition      = 0;
 
 };
 

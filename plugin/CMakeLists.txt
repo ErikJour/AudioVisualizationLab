@@ -45,6 +45,7 @@ target_sources(TrainingHour
         dsp/TrainingNoise.cpp
         dsp/TrainingFilter.cpp
         dsp/ErikOscillator.cpp
+        dsp/ErikDelay.cpp
         UI/webGpuWindow.cpp
         UI/Scene.cpp
         geometries/PlaneGeometry.cpp

@@ -2,6 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include "ErikDelay.h"
 #include "ErikOscillator.h"
 #include "TrainingNoise.h"
 #include "TrainingFilter.h"
@@ -51,6 +52,7 @@ private:
     TrainingNoise noiseGenerator;
     TrainingFilter allPassFilter;
     ErikOscillator sineOsc;
+    ErikDelay delay;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourAudioProcessor)
 };
