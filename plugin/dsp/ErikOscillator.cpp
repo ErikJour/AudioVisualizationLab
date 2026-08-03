@@ -36,7 +36,10 @@ float ErikOscillator::processSample() {
 void ErikOscillator::processBuffer(float* buffer, const int numSamples)
 {
     for (int i = 0; i < numSamples; i++) {
-        buffer[i] += processSample();
+        float input =  buffer[i];
+        input += processSample();
+        // gainFactor *= 0.9999f;
+        buffer[i] = input /** gainFactor*/;
     }
 }
 

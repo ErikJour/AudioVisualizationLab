@@ -30,6 +30,7 @@ private:
     double mSampleRate = 44100.0;
     float  mIncrement  = 0.0f;
     float  mGain       = 0.5f;
+    float gainFactor   = 0.9f;
 };
 
 
