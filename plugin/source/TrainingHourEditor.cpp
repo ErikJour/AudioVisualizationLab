@@ -56,8 +56,10 @@ void TrainingHourProcessorEditor::resized()
 void TrainingHourProcessorEditor::timerCallback()
 {
     if (mStartTimeSet) {
-        const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
-        mWebGpuWindow.getScene().renderFrame(elapsed);
+        // const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
+        mWebGpuWindow.getScene().renderFrame(outputForScene);
     }
+
+    outputForScene = processorRef.outputLevel.load(std::memory_order_relaxed);
 }
 

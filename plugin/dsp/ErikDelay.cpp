@@ -13,13 +13,7 @@ void ErikDelay::init (const double sampleRate)
 {
     mDelayBufferLength = static_cast<int>(sampleRate) * MAX_DELAY_SECONDS;
     mDelayBuffer       = std::make_unique<float[]>(static_cast<size_t>(mDelayBufferLength));
-    reset();
-}
-
-void ErikDelay::reset()
-{
-    mWritePosition = 0;
-    mReadPosition  = 0;
+    mWritePosition     = 0;
 }
 
 void ErikDelay::setDelay(int delayInSamples)
@@ -32,7 +26,6 @@ void ErikDelay::setDelay(int delayInSamples)
 }
 
 void ErikDelay::processBuffer(float* buffer, const int numSamples) {
-    std::cout << "The Read position is " << mReadPosition << std::endl;
     for (int i = 0; i < numSamples; i++)
     {
         const float inputSample                           = buffer[i];
@@ -40,8 +33,8 @@ void ErikDelay::processBuffer(float* buffer, const int numSamples) {
         const float outputSample                          = mDelayBuffer[static_cast<size_t>(mReadPosition)];
         buffer[i]                                         = (inputSample * 0.5f) + (outputSample * 0.5f);
         mWritePosition++;
-        if (mWritePosition > mDelayBufferLength) { mWritePosition = 0; }
+        if (mWritePosition >= mDelayBufferLength) { mWritePosition = 0; }
         mReadPosition++;
-        if (mReadPosition > mDelayBufferLength) { mReadPosition = 0; }
+        if (mReadPosition >= mDelayBufferLength) { mReadPosition = 0; }
     }
 }

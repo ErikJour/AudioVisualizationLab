@@ -47,6 +47,9 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     float getSinePhase() const;
+    //UI
+    std::atomic<float> outputLevel = 0.0f;
+
 
 private:
     TrainingNoise noiseGenerator;

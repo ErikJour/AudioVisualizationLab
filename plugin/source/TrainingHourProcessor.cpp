@@ -90,7 +90,7 @@ void TrainingHourAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     sineOsc.setSampleRate(sampleRate);
     sineOsc.setFrequency(300.0f);
     delay.init(sampleRate);
-    delay.setDelay(250);
+    delay.setDelay(40000);
     juce::ignoreUnused ( samplesPerBlock);
 }
 
@@ -137,12 +137,16 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.clear (i, 0, buffer.getNumSamples());
 
     sineOsc.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-    delay.setDelay(250);
-    delay.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
 
    // noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    delay.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+
    //
    //  allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+
+    float outputValue = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+    outputLevel.store(outputValue * 5.0f, std::memory_order_relaxed);
+
 
 }
 
