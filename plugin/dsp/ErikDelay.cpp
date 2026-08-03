@@ -9,7 +9,7 @@ ErikDelay::ErikDelay() {}
 void ErikDelay::init (const double sampleRate)
 {
     mDelayBufferLength = static_cast<int>(sampleRate) * MAX_DELAY_SECONDS;
-    mDelayBuffer = std::make_unique<float>(mDelayBufferLength);
+    mDelayBuffer = std::make_unique<float[]>(mDelayBufferLength);
     reset();
 }
 
@@ -33,6 +33,7 @@ void ErikDelay::processBuffer(float* buffer, const int numSamples) {
     {
         float inputSample = buffer[i];
         mDelayBuffer[mWritePosition] = inputSample;
+        float outputSample = mDelayBuffer[mReadPosition];
 
 
     }
