@@ -37,6 +37,7 @@ target_include_directories(TrainingHour
         include
         source
         dsp
+        midi
 )
 
 target_link_libraries(TrainingHour
