@@ -1,22 +1,37 @@
 #pragma once
 
 #include "TrainingHourProcessor.h"
+#include "webGpuWindow.h"
 
 //==============================================================================
-class TrainingHourProcessorEditor final : public juce::AudioProcessorEditor
+class TrainingHourProcessorEditor final :   public juce::AudioProcessorEditor,
+                                            private juce::Timer
 {
 public:
     explicit TrainingHourProcessorEditor (TrainingHourAudioProcessor&);
     ~TrainingHourProcessorEditor() override;
 
     //==============================================================================
-    void paint (juce::Graphics&) override;
+    void parentHierarchyChanged();
     void resized() override;
+    void timerCallback() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+
+    //======================================
+    //Local Variables
+    //=====================================
     TrainingHourAudioProcessor& processorRef;
+    WebGpuWindow                mWebGpuWindow;
+#if JUCE_MAC
+    juce::NSViewComponent       mMetalView;
+#endif
+    double   mStartTimeMs         = 0.0;
+    bool     mStartTimeSet        = false;
+    uint32_t mConfiguredWidth     = 0;
+    uint32_t mConfiguredHeight    = 0;
+    float    phaseViz             = 0.0f;
+    float    outputForScene       = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourProcessorEditor)
 };

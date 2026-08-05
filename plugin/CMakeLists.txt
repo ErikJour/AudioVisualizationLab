@@ -23,13 +23,33 @@ else()
     target_compile_options(TrainingHour PRIVATE -Wall -Wextra -pedantic)
 endif()
 
+#WebGPU
+target_copy_webgpu_binaries(TrainingHour)
+if (APPLE)
+    set_target_properties(TrainingHour PROPERTIES
+            XCODE_GENERATE_SCHEME ON
+            XCODE_SCHEME_ENABLE_GPU_FRAME_CAPTURE_MODE "Metal"
+            XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME "Yes"
+    )
+endif()
+
+if(APPLE)
+    target_sources(TrainingHour PRIVATE source/GpuSurface.mm)
+    target_link_libraries(TrainingHour PRIVATE "-framework QuartzCore" "-framework Metal")
+endif()
+
 target_sources(TrainingHour
         PRIVATE
         source/TrainingHourEditor.cpp
         source/TrainingHourProcessor.cpp
         dsp/TrainingNoise.cpp
         dsp/TrainingFilter.cpp
-        dsp/TrainingCircularBuffer.cpp
+        dsp/ErikOscillator.cpp
+        dsp/ErikDelay.cpp
+        UI/webGpuWindow.cpp
+        UI/Scene.cpp
+        geometries/PlaneGeometry.cpp
+
 )
 
 target_include_directories(TrainingHour
@@ -37,11 +57,15 @@ target_include_directories(TrainingHour
         include
         source
         dsp
+        UI
+        shaders
+        geometries
         midi
 )
 
 target_link_libraries(TrainingHour
         PRIVATE
+        webgpu
             juce::juce_audio_utils
             juce::juce_gui_extra
             juce::juce_dsp
@@ -56,4 +80,29 @@ target_compile_definitions(TrainingHour
             JUCE_USE_CURL=0
             JUCE_VST3_CAN_REPLACE_VST2=0
 )
+
+#==============================
+#Shader files
+#==============================
+set(SHADER_FILES
+        "shaders/vertex_main.wgsl"
+        "shaders/fragment_main.wgsl"
+        "shaders/common.wgsl"
+        "shaders/mat_plane.wgsl"
+)
+
+set(SHADER_SOURCE "")
+foreach(SHADER_FILE ${SHADER_FILES})
+    file(READ "${SHADER_FILE}" SHADER_CHUNK)
+    string(APPEND SHADER_SOURCE "${SHADER_CHUNK}\n")
+endforeach()
+
+target_compile_definitions(TrainingHour
+        PRIVATE
+        DEBUG_SHADER_DIR="${CMAKE_CURRENT_SOURCE_DIR}/shaders"
+)
+
+target_include_directories(TrainingHour PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+
+
 

@@ -16,6 +16,7 @@ TrainingHourAudioProcessor::TrainingHourAudioProcessor()
 
 TrainingHourAudioProcessor::~TrainingHourAudioProcessor()
 {
+    sineOsc.reset();
 }
 
 //==============================================================================
@@ -86,13 +87,11 @@ void TrainingHourAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void TrainingHourAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
-    mCircularBuffer.init(sampleRate);
-
-    // (Optional but recommended) Set a default delay so the read head is positioned safely
-    mCircularBuffer.setDelay(50);
+    sineOsc.setSampleRate(sampleRate);
+    sineOsc.setFrequency(300.0f);
+    delay.init(sampleRate);
+    delay.setDelay(40000);
+    juce::ignoreUnused ( samplesPerBlock);
 }
 
 void TrainingHourAudioProcessor::releaseResources()
@@ -128,7 +127,6 @@ bool TrainingHourAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
 {
-
     juce::ignoreUnused (midiMessages);
 
     juce::ScopedNoDenormals noDenormals;
@@ -137,14 +135,21 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-    noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
-    allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
-    mCircularBuffer.process(buffer.getWritePointer(0), buffer.getNumSamples());
-
-
+    //===================================================================================
+    //Sound generation
+    //===================================================================================
+    sineOsc.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    // noiseGenerator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    //===================================================================================
+    //Effects
+    //===================================================================================
+    delay.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+   //  allPassFilter.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    //===================================================================================
+    //Get the output value
+    //===================================================================================
+    float outputValue = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+    outputLevel.store(outputValue * 5.0f, std::memory_order_relaxed);
 }
 
 //==============================================================================
@@ -180,3 +185,6 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new TrainingHourAudioProcessor();
 }
+
+float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase(); }
+

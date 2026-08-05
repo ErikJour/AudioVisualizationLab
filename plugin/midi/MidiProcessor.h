@@ -1,0 +1,8 @@
+//
+// Created by Erik Jourgensen on 8/5/26.
+//
+
+#ifndef TRAININGHOUR_MIDIPROCESSOR_H
+#define TRAININGHOUR_MIDIPROCESSOR_H
+
+#endif //TRAININGHOUR_MIDIPROCESSOR_H
