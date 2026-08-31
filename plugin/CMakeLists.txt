@@ -49,7 +49,7 @@ target_sources(TrainingHour
         UI/webGpuWindow.cpp
         UI/Scene.cpp
         geometries/PlaneGeometry.cpp
-
+        geometries/SphereGeometry.cpp
 )
 
 target_include_directories(TrainingHour
@@ -88,6 +88,7 @@ set(SHADER_FILES
         "shaders/fragment_main.wgsl"
         "shaders/common.wgsl"
         "shaders/mat_plane.wgsl"
+        "shaders/mat_sphere.wgsl"
 )
 
 set(SHADER_SOURCE "")

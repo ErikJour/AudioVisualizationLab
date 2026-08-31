@@ -37,7 +37,7 @@ public:
     bool createPipeline();
     void updateTexture(uint32_t width, uint32_t height);
     void setUniforms(float time);
-    void renderMeshes(WGPURenderPassEncoder renderPass);
+    void renderMeshes(WGPURenderPassEncoder renderPass) const;
     void renderFrame(float time);
     void initializeScene();
     //===================================================================================
@@ -45,6 +45,8 @@ public:
     //===================================================================================
     void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
     void initializePlane();
+    void initializeSphere(float radius);
+
 
     //===================================================================================
     //Public Getter Functions
@@ -82,6 +84,9 @@ private:
     WGPUBuffer                   mPlaneVertexBuffer         = nullptr;
     WGPUBuffer                   mPlaneIndexBuffer          = nullptr;
     uint32_t                     mPlaneIndexCount           = 0;
+    WGPUBuffer                   mSphereVertexBuffer        = nullptr;
+    WGPUBuffer                   mSphereIndexBuffer         = nullptr;
+    uint32_t                     mSphereIndexCount          = 0;
 };
 
 

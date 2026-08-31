@@ -5,7 +5,8 @@
 #pragma once
 #include <cstdint>
 
-static constexpr uint32_t MAT_PLANE = 0;
+static constexpr uint32_t MAT_PLANE  = 0;
+static constexpr uint32_t MAT_SPHERE = 1;
 
 struct MyUniforms {
     float    time;

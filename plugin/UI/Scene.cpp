@@ -3,9 +3,9 @@
 //
 
 #include "Scene.h"
-
 #include <iostream>
 #include <ostream>
+#include "SphereGeometry.h"
 //===================================================================================
 //Setup
 //====================================================================================
@@ -19,6 +19,8 @@ void Scene::terminate()
 {
     if (mPlaneIndexBuffer) { wgpuBufferRelease(mPlaneIndexBuffer);                            mPlaneIndexBuffer  = nullptr; }
     if (mPlaneVertexBuffer) { wgpuBufferRelease(mPlaneVertexBuffer);                          mPlaneVertexBuffer = nullptr; }
+    if (mSphereIndexBuffer) { wgpuBufferRelease(mSphereIndexBuffer);                          mSphereIndexBuffer  = nullptr; }
+    if (mSphereVertexBuffer) { wgpuBufferRelease(mSphereVertexBuffer);                        mSphereVertexBuffer = nullptr; }
     if (mBindGroup)         { wgpuBindGroupRelease(mBindGroup);                               mBindGroup         = nullptr; }
     if (mUniformBuffer)     { wgpuBufferRelease(mUniformBuffer);                              mUniformBuffer     = nullptr; }
     if (mPipeline)          { wgpuRenderPipelineRelease(mPipeline);                           mPipeline          = nullptr; }
@@ -240,9 +242,10 @@ void Scene::setUniforms(const float time)
 
 }
 
-void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) {
+void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {
 
     setMeshBuffers(mPlaneVertexBuffer, mPlaneIndexBuffer, mPlaneIndexCount, MAT_PLANE, renderPass);
+    setMeshBuffers(mSphereVertexBuffer, mSphereIndexBuffer, mSphereIndexCount, MAT_SPHERE, renderPass);
 }
 
 void Scene::renderFrame(const float time) {
@@ -340,6 +343,7 @@ void Scene::renderFrame(const float time) {
 void Scene::initializeScene() {
 
     initializePlane();
+    initializeSphere(100.0f);
 
 }
 
@@ -374,6 +378,25 @@ void Scene::initializePlane()
     bd.size = indices.size() * sizeof(planeIndex);
     mPlaneIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
     wgpuQueueWriteBuffer(mQueue, mPlaneIndexBuffer, 0, indices.data(), bd.size);
+}
+
+void Scene::initializeSphere(const float radius)
+{
+    std::cout << "Initializing sphere" << std::endl;
+    std::vector<SphereVertex> vertices;
+    std::vector<SphereIndex>  indices;
+
+    SphereGeometry::buildSphere(vertices, indices, radius);
+    // indexCount = static_cast<uint32_t>(indices.size());
+    WGPUBufferDescriptor bd{};
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+    bd.size = vertices.size() * sizeof(SphereVertex);
+    mSphereVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mSphereVertexBuffer, 0, vertices.data(), bd.size);
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+    bd.size = indices.size() * sizeof(SphereIndex);
+    mSphereIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mSphereIndexBuffer, 0, indices.data(), bd.size);
 }
 
 

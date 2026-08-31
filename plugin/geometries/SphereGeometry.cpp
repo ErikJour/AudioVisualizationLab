@@ -9,13 +9,13 @@ SphereGeometry::~SphereGeometry() {}
 
 void SphereGeometry::buildSphere(std::vector<SphereVertex>& vertices,
                             std::vector<SphereIndex>& indices,
-                            const float radius       = 0.5f,
-                            const int widthSegments  = 64,
-                            const int heightSegments = 64,
-                            const float phiStart     = 0.0f,
-                            const float phiLength    = PI * 2,
-                            const float thetaStart   = 0.0f,
-                            const float thetaLength  = PI) {
+                            const float radius,
+                            const int widthSegments,
+                            const int heightSegments,
+                            const float phiStart,
+                            const float phiLength,
+                            const float thetaStart,
+                            const float thetaLength) {
 
         const float thetaEnd = std::min(thetaStart + thetaLength, PI);
         std::vector<uint32_t> grid;
@@ -25,8 +25,7 @@ void SphereGeometry::buildSphere(std::vector<SphereVertex>& vertices,
         std::vector<float> uv      = {};
 
         for (int iy = 0; iy <= heightSegments; iy++) {
-            std::vector<int> verticesRow = {};
-            const float v             = static_cast<float>(iy) / static_cast<float>(heightSegments);
+            const float v                = static_cast<float>(iy) / static_cast<float>(heightSegments);
             const float inverse          = 1.0f / radius;
 
             for (int ix = 0; ix <= widthSegments; ix++) {
