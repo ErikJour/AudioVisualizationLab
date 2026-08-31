@@ -9,7 +9,7 @@ ErikOscillator::ErikOscillator() :  mPhase(0.0),
                                     mSampleRate(44100),
                                     mIncrement(0.0f) {}
 
-void ErikOscillator::reset() { mPhase = 0.0f; }
+void ErikOscillator::reset() { mPhase = 0.0f; gainFactor = 1.0f;}
 
 void ErikOscillator::setSampleRate(const double newSampleRate) { mSampleRate = newSampleRate; }
 
@@ -42,6 +42,8 @@ void ErikOscillator::processBuffer(float* buffer, const int numSamples)
         buffer[i] = input * gainFactor;
     }
 }
+
+
 
 float ErikOscillator::getPhase() const { return static_cast<float>(mPhase); }
 

@@ -18,6 +18,7 @@ public:
     float createSine() const;
     float processSample();
     void processBuffer(float *buffer, int numSamples);
+    void implementFade(float *buffer, int numSamples);
     float getPhase() const;
     //=================================================
     //Fast sin function

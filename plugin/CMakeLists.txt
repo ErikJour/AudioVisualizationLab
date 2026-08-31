@@ -49,7 +49,6 @@ target_sources(TrainingHour
         UI/webGpuWindow.cpp
         UI/Scene.cpp
         geometries/PlaneGeometry.cpp
-
 )
 
 target_include_directories(TrainingHour

@@ -6,6 +6,7 @@
 #include "ErikOscillator.h"
 #include "TrainingNoise.h"
 #include "TrainingFilter.h"
+#include "MidiProcessor.h"
 
 //==============================================================================
 class TrainingHourAudioProcessor final : public juce::AudioProcessor
@@ -53,9 +54,10 @@ public:
 
 private:
     TrainingNoise noiseGenerator;
-    TrainingFilter allPassFilter;
+    TrainingFilter filterOne;
     ErikOscillator sineOsc;
     ErikDelay delay;
+    MidiProcessor midiProcessor;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourAudioProcessor)
 };

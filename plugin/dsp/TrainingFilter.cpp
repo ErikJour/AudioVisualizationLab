@@ -12,16 +12,56 @@ TrainingFilter::TrainingFilter()
 }
 TrainingFilter::~TrainingFilter() = default;
 
-void TrainingFilter::processBuffer(float* buffer, int numSamples)
+float TrainingFilter::filterOne(const float input)
 {
-    const float freq = 10000.0f;
+    constexpr float freq = 10000.0f;
+    const float tan_g    = std::tan((PI * freq / static_cast<float>(mSampleRate)));
 
+    const float b0       = tan_g / (1.0f + tan_g);
+    const float b1       = tan_g / (1.0f + tan_g);
+    const float a1       = (tan_g - 1.0f) / (tan_g + 1.0f);
+
+    const float output   = b0 * input + mDelay;
+    mDelay               = b1 * input - a1 * output;
+
+    return output;
+}
+
+float TrainingFilter::onePoleIIR(const float input, float delay, const float a0, const float b1)
+{
+    return a0 * input - b1 * delay;
+}
+
+
+void TrainingFilter::processBuffer(float* buffer, const int numSamples)
+{
     for (int i = 0; i < numSamples; i++) {
-        float input = buffer[i];
-        const float tan = std::tan((PI * freq / static_cast<float>(mSampleRate)));
-        const float a1 = (tan - 1) / (tan + 1);
-        buffer[i] *= a1 * input + dn_1;
-        dn_1 = input - a1 * buffer[i];
+
+        //=================================
+        //One pole IIR
+        //=================================
+        // const float input       = buffer[i];
+        // const float output      = onePoleIIR(input, mDelay, 0.05f, -0.95f);
+        // mDelay                  = output; //FIR is input, IIR is output
+        //=================================
+        //Feedforward filter
+        //=================================
+        int delay = 0;
+        if (buffer[i] < 1) { delay = 0;     }
+        else               { delay = i - 1; }
+        const float input          = buffer[i];
+        const float delayedInput   = buffer[delay];
+        const float output         = feedForwardFilter(input, delayedInput, 0.5f, 0.5f);
+        //=================================
+        //Buffer assignment
+        //=================================
+        buffer[i]               = output;
+
     }
+}
+
+float TrainingFilter::feedForwardFilter(float input, float delayedInput, float a0, float a1) {
+
+    return (input * a0) + (delayedInput * a1);
 
 }

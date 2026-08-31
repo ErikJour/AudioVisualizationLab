@@ -13,9 +13,9 @@ public:
     ErikDelay();
     ~ErikDelay() = default;
     void init (double sampleRate);
-    void reset();
     void setDelay(int delayInSamples);
     void processBuffer(float* buffer, int numSamples);
+    void clearBuffer();
 private:
     int                      mDelayBufferLength = 0;
     std::unique_ptr<float[]> mDelayBuffer         {};

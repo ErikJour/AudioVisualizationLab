@@ -44,3 +44,12 @@ void ErikDelay::processBuffer(float* buffer, const int numSamples) {
         if (mReadPosition >= mDelayBufferLength) { mReadPosition = 0; }
     }
 }
+
+void ErikDelay::clearBuffer()
+{
+    for (int i = 0; i < mDelayBufferLength; i++) {
+        mDelayBuffer[i] = 0.0f;
+    }
+}
+
+

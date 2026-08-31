@@ -13,12 +13,16 @@ class TrainingFilter {
     public:
         TrainingFilter();
         ~TrainingFilter();
+        float filterOne(float input);
+        static float onePoleIIR(float input, float delay, float a0, float b1);
+        float feedForwardFilter(float input, float delayedInput, float a0, float a1);
 
-        void processBuffer(float* buffer, int numSamples);
+        void processBuffer(float *buffer, int numSamples);
 
     private:
         double mSampleRate { 44100.0 };
-        float dn_1 { 0.0 };
+        float  dn_1        { 0.0     };
+        float  mDelay      { 0.0f    };
 };
 
 
