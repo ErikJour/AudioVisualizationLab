@@ -65,9 +65,14 @@ void TrainingHourProcessorEditor::timerCallback()
 
 void TrainingHourProcessorEditor::mouseDown(const juce::MouseEvent& event)
 {
-    const auto currentX = static_cast<float>(event.x);
-    const auto currentY = static_cast<float>(event.y);
-    std::cout << currentX << " " << currentY << std::endl;
+    const auto currentX    = static_cast<float>(event.x);
+    const auto width       = static_cast<float>(getWidth());
+    const auto height      = static_cast<float>(getHeight());
+    const auto mappedX= juce::jmap<float> (currentX, 0, width, -1.0f, 1.0f);
+    const auto currentY    = static_cast<float>(event.y);
+    const auto mappedY= juce::jmap<float> (currentY, 0, height, 1.0f, -1.0f);
+
+    std::cout << "Mouse coordinates: " << mappedX << " " << mappedY << std::endl;
 }
 
 void TrainingHourProcessorEditor::mouseUp  (const juce::MouseEvent& event)
