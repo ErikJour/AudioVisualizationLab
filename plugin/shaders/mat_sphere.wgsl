@@ -8,10 +8,10 @@ fn fragmentSphere (in: VertexOutput) -> vec4f {
 
 fn vertexSphere (position: ptr<function, vec3f>) -> vec4f {
     let wave = sin(u.time);
-    position.x -= 2.5;
-    position.y -= 1.3;
-    position.x *= 0.3;
-    position.y *= 0.5;
+    position.x -= 3.0;
+    position.y -= 1.7;
+    position.x *= 0.25;
+    position.y *= 0.4;
     return vec4f(*position, 1.0);
 
 }

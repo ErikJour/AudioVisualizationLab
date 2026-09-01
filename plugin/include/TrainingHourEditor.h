@@ -15,6 +15,8 @@ public:
     void parentHierarchyChanged();
     void resized() override;
     void timerCallback() override;
+    void mouseDown(const juce::MouseEvent& event) override;
+    void mouseUp  (const juce::MouseEvent& event) override;
 
 private:
 
@@ -32,6 +34,8 @@ private:
     uint32_t mConfiguredHeight    = 0;
     float    phaseViz             = 0.0f;
     float    outputForScene       = 0.0f;
+    float    mLastMouseX          = 0.0f;
+    float    mLastMouseY          = 0.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourProcessorEditor)
 };

@@ -63,3 +63,14 @@ void TrainingHourProcessorEditor::timerCallback()
     outputForScene = processorRef.outputLevel.load(std::memory_order_relaxed);
 }
 
+void TrainingHourProcessorEditor::mouseDown(const juce::MouseEvent& event)
+{
+    const auto currentX = static_cast<float>(event.x);
+    const auto currentY = static_cast<float>(event.y);
+    std::cout << currentX << " " << currentY << std::endl;
+}
+
+void TrainingHourProcessorEditor::mouseUp  (const juce::MouseEvent& event)
+{
+
+}
