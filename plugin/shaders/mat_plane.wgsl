@@ -2,7 +2,7 @@
 //Plane Shader
 //===================================
 fn fragmentPlane (in: VertexOutput) -> vec4f {
-    let baseColor = vec3f(0.75 * u.time, 0.4 * u.time, 1.0 * u.time);
+    let baseColor = vec3f(0.5 /** u.time*/, 0.4 * u.time, 1.0 * u.time);
     return vec4f(baseColor, 1.0);
 }
 

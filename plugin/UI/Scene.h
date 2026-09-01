@@ -15,7 +15,7 @@
 #include "PlaneGeometry.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
-static constexpr uint32_t materialCount = 1;
+static constexpr uint32_t materialCount = 2;
 
 class Scene {
 public:
@@ -45,7 +45,7 @@ public:
     //===================================================================================
     void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
     void initializePlane();
-    void initializeSphere(float radius);
+    void initializeSphere();
 
 
     //===================================================================================

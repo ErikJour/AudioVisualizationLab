@@ -10,12 +10,15 @@ SphereGeometry::~SphereGeometry() {}
 void SphereGeometry::buildSphere(std::vector<SphereVertex>& vertices,
                             std::vector<SphereIndex>& indices,
                             const float radius,
-                            const int widthSegments,
-                            const int heightSegments,
+                            int widthSegments,
+                            int heightSegments,
                             const float phiStart,
                             const float phiLength,
                             const float thetaStart,
                             const float thetaLength) {
+
+        widthSegments  = std::max(3, static_cast<int>(std::floor(widthSegments)));
+        heightSegments = std::max(2, static_cast<int>(std::floor(heightSegments)));
 
         const float thetaEnd = std::min(thetaStart + thetaLength, PI);
         std::vector<uint32_t> grid;
@@ -25,8 +28,9 @@ void SphereGeometry::buildSphere(std::vector<SphereVertex>& vertices,
         std::vector<float> uv      = {};
 
         for (int iy = 0; iy <= heightSegments; iy++) {
+
             const float v                = static_cast<float>(iy) / static_cast<float>(heightSegments);
-            const float inverse          = 1.0f / radius;
+            // const float inverse          = 1.0f / radius;
 
             for (int ix = 0; ix <= widthSegments; ix++) {
                 const float u = static_cast<float>(ix) / static_cast<float>(widthSegments);
@@ -36,15 +40,17 @@ void SphereGeometry::buildSphere(std::vector<SphereVertex>& vertices,
 
                 vertices.push_back( {
                 vertex.x, vertex.y, vertex.z,
-                vertex.x * inverse, vertex.y * inverse, vertex.z * inverse,
-                zero, zero, zero});
+                0.0f, 1.0f, 0.0f,
+                1.0f, 1.0f, 1.0f});
 
                 grid.push_back(static_cast<uint32_t>(vertices.size() - 1));
             }
         }
 
         for (int iy = 0; iy < heightSegments; iy++) {
+
             for (int ix = 0; ix < widthSegments; ix++) {
+
                 const int rowWidth = widthSegments + 1;
                 const auto a = grid[static_cast<uint32_t>(iy) * static_cast<uint32_t>(rowWidth) + static_cast<uint32_t>(ix + 1)];
                 const auto b = grid[static_cast<uint32_t>(iy) * static_cast<uint32_t>(rowWidth) + static_cast<uint32_t>(ix)];

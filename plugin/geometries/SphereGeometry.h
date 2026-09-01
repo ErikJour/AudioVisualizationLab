@@ -8,7 +8,6 @@
 #include <vector>
 
 constexpr float PI   = 3.14159265359f;
-constexpr float zero = 1.0f;
 
 struct SphereVertex {
     float x, y, z;
@@ -27,7 +26,7 @@ public:
                             std::vector<SphereIndex>& indices,
                              float radius       = 0.5f,
                              int widthSegments  = 64,
-                             int heightSegments = 64,
+                             int heightSegments = 32,
                              float phiStart     = 0.0f,
                              float phiLength    = PI * 2,
                              float thetaStart   = 0.0f,

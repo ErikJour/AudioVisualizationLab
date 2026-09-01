@@ -13,4 +13,4 @@ struct MyUniforms {
     uint32_t materialId;
 };
 
-static_assert(sizeof(MyUniforms) % 4 == 0);
+static_assert(sizeof(MyUniforms) % 8 == 0);

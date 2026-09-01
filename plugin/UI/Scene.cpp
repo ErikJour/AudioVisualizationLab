@@ -17,17 +17,17 @@ void Scene::setShaderModule(WGPUShaderModule shaderModule)             { mShader
 void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc            = pipelineDesc; }
 void Scene::terminate()
 {
-    if (mPlaneIndexBuffer) { wgpuBufferRelease(mPlaneIndexBuffer);                            mPlaneIndexBuffer  = nullptr; }
-    if (mPlaneVertexBuffer) { wgpuBufferRelease(mPlaneVertexBuffer);                          mPlaneVertexBuffer = nullptr; }
-    if (mSphereIndexBuffer) { wgpuBufferRelease(mSphereIndexBuffer);                          mSphereIndexBuffer  = nullptr; }
-    if (mSphereVertexBuffer) { wgpuBufferRelease(mSphereVertexBuffer);                        mSphereVertexBuffer = nullptr; }
-    if (mBindGroup)         { wgpuBindGroupRelease(mBindGroup);                               mBindGroup         = nullptr; }
-    if (mUniformBuffer)     { wgpuBufferRelease(mUniformBuffer);                              mUniformBuffer     = nullptr; }
-    if (mPipeline)          { wgpuRenderPipelineRelease(mPipeline);                           mPipeline          = nullptr; }
-    if (mSurface)           { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface           = nullptr; }
+    if (mPlaneIndexBuffer)   { wgpuBufferRelease(mPlaneIndexBuffer);                           mPlaneIndexBuffer   = nullptr; }
+    if (mPlaneVertexBuffer)  { wgpuBufferRelease(mPlaneVertexBuffer);                          mPlaneVertexBuffer  = nullptr; }
+    if (mSphereIndexBuffer)  { wgpuBufferRelease(mSphereIndexBuffer);                          mSphereIndexBuffer  = nullptr; }
+    if (mSphereVertexBuffer) { wgpuBufferRelease(mSphereVertexBuffer);                         mSphereVertexBuffer = nullptr; }
+    if (mBindGroup)          { wgpuBindGroupRelease(mBindGroup);                               mBindGroup          = nullptr; }
+    if (mUniformBuffer)      { wgpuBufferRelease(mUniformBuffer);                              mUniformBuffer      = nullptr; }
+    if (mPipeline)           { wgpuRenderPipelineRelease(mPipeline);                           mPipeline           = nullptr; }
+    if (mSurface)            { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface            = nullptr; }
 }
 //===================================================================================
-//Shader
+//Shaders
 //===================================================================================
 bool Scene::createShader() {
 #ifdef DEBUG
@@ -236,9 +236,12 @@ void Scene::setUniforms(const float time)
 {
     mUniforms.time = time;
 
-    for (uint32_t m = 0; m < materialCount; ++m)
+    for (uint32_t m = 0; m < materialCount; m++) {
+        mUniforms.materialId = m;
         wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
-                             m * mUniformStride, &mUniforms, sizeof(MyUniforms));
+                            m * mUniformStride, &mUniforms, sizeof(MyUniforms));
+    }
+
 
 }
 
@@ -343,7 +346,7 @@ void Scene::renderFrame(const float time) {
 void Scene::initializeScene() {
 
     initializePlane();
-    initializeSphere(100.0f);
+    initializeSphere();
 
 }
 
@@ -380,14 +383,14 @@ void Scene::initializePlane()
     wgpuQueueWriteBuffer(mQueue, mPlaneIndexBuffer, 0, indices.data(), bd.size);
 }
 
-void Scene::initializeSphere(const float radius)
+void Scene::initializeSphere()
 {
     std::cout << "Initializing sphere" << std::endl;
     std::vector<SphereVertex> vertices;
     std::vector<SphereIndex>  indices;
 
-    SphereGeometry::buildSphere(vertices, indices, radius);
-    // indexCount = static_cast<uint32_t>(indices.size());
+    SphereGeometry::buildSphere(vertices, indices);
+    mSphereIndexCount = static_cast<uint32_t>(indices.size());
     WGPUBufferDescriptor bd{};
     bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
     bd.size = vertices.size() * sizeof(SphereVertex);

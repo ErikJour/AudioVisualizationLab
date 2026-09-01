@@ -1,5 +1,5 @@
-const MAT_PLANE: u32   = 0u;
-const MAT_SPHERE: u32 = 1u;
+const MAT_PLANE:  u32   = 0u;
+const MAT_SPHERE: u32   = 1u;
 
 struct Uniforms {
     time:       f32,
