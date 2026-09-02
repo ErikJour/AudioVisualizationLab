@@ -72,10 +72,12 @@ void TrainingHourProcessorEditor::mouseDown(const juce::MouseEvent& event)
     const auto currentY    = static_cast<float>(event.y);
     const auto mappedY= juce::jmap<float> (currentY, 0, height, 1.0f, -1.0f);
 
-    std::cout << "Mouse coordinates: " << mappedX << " " << mappedY << std::endl;
+    mWebGpuWindow.getScene().setMouseCoords(mappedX, mappedY);
+    mWebGpuWindow.getScene().setMouseDown(true);
 }
 
 void TrainingHourProcessorEditor::mouseUp  (const juce::MouseEvent& event)
 {
-
+    juce::ignoreUnused(event);
+    mWebGpuWindow.getScene().setMouseDown(false);
 }

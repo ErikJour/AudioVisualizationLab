@@ -11,6 +11,7 @@ static constexpr uint32_t MAT_SPHERE = 1;
 struct MyUniforms {
     float    time;
     uint32_t materialId;
+    float    pressed;
 };
 
-static_assert(sizeof(MyUniforms) % 8 == 0);
+static_assert(sizeof(MyUniforms) % 4 == 0);

@@ -236,13 +236,13 @@ void Scene::setUniforms(const float time)
 {
     mUniforms.time = time;
 
+    mUniforms.pressed = mMouseClicked;
+
     for (uint32_t m = 0; m < materialCount; m++) {
         mUniforms.materialId = m;
         wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
                             m * mUniformStride, &mUniforms, sizeof(MyUniforms));
     }
-
-
 }
 
 void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {
@@ -400,6 +400,24 @@ void Scene::initializeSphere()
     bd.size = indices.size() * sizeof(SphereIndex);
     mSphereIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
     wgpuQueueWriteBuffer(mQueue, mSphereIndexBuffer, 0, indices.data(), bd.size);
+}
+
+void Scene::setMouseCoords(const float inX, const float inY) {
+    mMouseX = inX;
+    mMouseY = inY;
+}
+
+void Scene::setMouseDown(const bool mouseDown) {
+    constexpr float minButtonX = -0.9f;
+    constexpr float maxButtonX = -0.6f;
+    constexpr float minButtonY = -0.93f;
+    constexpr float maxButtonY = -0.45f;
+
+    if (mMouseX > minButtonX && mMouseX < maxButtonX && mMouseY > minButtonY && mMouseY < maxButtonY ) {
+
+        mMouseClicked = mouseDown;
+    }
+
 }
 
 

@@ -46,8 +46,11 @@ public:
     void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
     void initializePlane();
     void initializeSphere();
-
-
+    //===================================================================================
+    //Mouse and Key Input
+    //===================================================================================
+    void setMouseCoords(float inX, float inY);
+    void setMouseDown(const bool mouseDown);
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -55,6 +58,7 @@ public:
     WGPUFragmentState    getFragmentState() const { return mFragmentState; }
     WGPUColorTargetState getColorTarget()   const { return mColorTarget; }
     WGPUBlendState       getBlendState()    const { return mBlendState; }
+
 
 private:
     WGPUFragmentState            mFragmentState             = {};
@@ -87,6 +91,11 @@ private:
     WGPUBuffer                   mSphereVertexBuffer        = nullptr;
     WGPUBuffer                   mSphereIndexBuffer         = nullptr;
     uint32_t                     mSphereIndexCount          = 0;
+
+    //Input
+    float mMouseX       = 0.0f;
+    float mMouseY       = 0.0f;
+    bool mMouseClicked  = false;
 };
 
 
