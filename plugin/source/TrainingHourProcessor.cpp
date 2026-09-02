@@ -183,7 +183,7 @@ void TrainingHourAudioProcessor::setStateInformation (const void* data, int size
 
 float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase(); }
 
-juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
+juce::AudioProcessorValueTreeState::ParameterLayout TrainingHourAudioProcessor::createParameterLayout() {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     return layout;
 }
