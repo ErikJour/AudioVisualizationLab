@@ -11,8 +11,9 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     var position = in.position;
 
     switch u.materialId {
-        case MAT_PLANE: { out.clipPos = vertexPlane        (&position); }
-        default:        { out.clipPos = projectPerspective (position);  }
+        case MAT_PLANE:  { out.clipPos = vertexPlane         (&position); }
+        case MAT_SPHERE: { out.clipPos = vertexSphere        (&position); }
+        default:         { out.clipPos = projectPerspective  (position);  }
     }
 
     out.color    = in.color;

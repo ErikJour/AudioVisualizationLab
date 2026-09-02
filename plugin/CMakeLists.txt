@@ -49,6 +49,8 @@ target_sources(TrainingHour
         UI/webGpuWindow.cpp
         UI/Scene.cpp
         geometries/PlaneGeometry.cpp
+        geometries/SphereGeometry.cpp
+        audio_utils/AudioUtils.h
 )
 
 target_include_directories(TrainingHour
@@ -60,6 +62,7 @@ target_include_directories(TrainingHour
         shaders
         geometries
         midi
+        audio_utils
 )
 
 target_link_libraries(TrainingHour
@@ -88,6 +91,7 @@ set(SHADER_FILES
         "shaders/fragment_main.wgsl"
         "shaders/common.wgsl"
         "shaders/mat_plane.wgsl"
+        "shaders/mat_sphere.wgsl"
 )
 
 set(SHADER_SOURCE "")

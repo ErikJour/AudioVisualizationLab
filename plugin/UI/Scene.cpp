@@ -3,29 +3,31 @@
 //
 
 #include "Scene.h"
-
 #include <iostream>
 #include <ostream>
+#include "SphereGeometry.h"
 //===================================================================================
 //Setup
 //====================================================================================
-void Scene::init(WGPUDevice device, WGPUQueue queue)                   { mDevice = device; mQueue = queue;        }
-void Scene::setSurface(const WGPUSurface surface)                      { mSurface                 = surface;      }
-void Scene::setSurfaceFormat(const WGPUTextureFormat format)           { mSurfaceFormat           = format;       }
-void Scene::setSurfaceSize(uint32_t width, uint32_t height)            { mWidth = width; mHeight  = height;       }
-void Scene::setShaderModule(WGPUShaderModule shaderModule)             { mShaderModule            = shaderModule; }
-void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc            = pipelineDesc; }
+void Scene::init(WGPUDevice device, WGPUQueue queue)                          { mDevice = device; mQueue = queue;        }
+void Scene::setSurface(const WGPUSurface surface)                             { mSurface                 = surface;      }
+void Scene::setSurfaceFormat(const WGPUTextureFormat format)                  { mSurfaceFormat           = format;       }
+void Scene::setSurfaceSize(const uint32_t width, const uint32_t height)       { mWidth = width; mHeight  = height;       }
+void Scene::setShaderModule(const WGPUShaderModule shaderModule)              { mShaderModule            = shaderModule; }
+void Scene::setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc) { mPipelineDesc            = pipelineDesc; }
 void Scene::terminate()
 {
-    if (mPlaneIndexBuffer) { wgpuBufferRelease(mPlaneIndexBuffer);                            mPlaneIndexBuffer  = nullptr; }
-    if (mPlaneVertexBuffer) { wgpuBufferRelease(mPlaneVertexBuffer);                          mPlaneVertexBuffer = nullptr; }
-    if (mBindGroup)         { wgpuBindGroupRelease(mBindGroup);                               mBindGroup         = nullptr; }
-    if (mUniformBuffer)     { wgpuBufferRelease(mUniformBuffer);                              mUniformBuffer     = nullptr; }
-    if (mPipeline)          { wgpuRenderPipelineRelease(mPipeline);                           mPipeline          = nullptr; }
-    if (mSurface)           { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface           = nullptr; }
+    if (mPlaneIndexBuffer)   { wgpuBufferRelease(mPlaneIndexBuffer);                           mPlaneIndexBuffer   = nullptr; }
+    if (mPlaneVertexBuffer)  { wgpuBufferRelease(mPlaneVertexBuffer);                          mPlaneVertexBuffer  = nullptr; }
+    if (mSphereIndexBuffer)  { wgpuBufferRelease(mSphereIndexBuffer);                          mSphereIndexBuffer  = nullptr; }
+    if (mSphereVertexBuffer) { wgpuBufferRelease(mSphereVertexBuffer);                         mSphereVertexBuffer = nullptr; }
+    if (mBindGroup)          { wgpuBindGroupRelease(mBindGroup);                               mBindGroup          = nullptr; }
+    if (mUniformBuffer)      { wgpuBufferRelease(mUniformBuffer);                              mUniformBuffer      = nullptr; }
+    if (mPipeline)           { wgpuRenderPipelineRelease(mPipeline);                           mPipeline           = nullptr; }
+    if (mSurface)            { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface            = nullptr; }
 }
 //===================================================================================
-//Shader
+//Shaders
 //===================================================================================
 bool Scene::createShader() {
 #ifdef DEBUG
@@ -234,15 +236,19 @@ void Scene::setUniforms(const float time)
 {
     mUniforms.time = time;
 
-    for (uint32_t m = 0; m < materialCount; ++m)
-        wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
-                             m * mUniformStride, &mUniforms, sizeof(MyUniforms));
+    mUniforms.pressed = mMouseClicked;
 
+    for (uint32_t m = 0; m < materialCount; m++) {
+        mUniforms.materialId = m;
+        wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
+                            m * mUniformStride, &mUniforms, sizeof(MyUniforms));
+    }
 }
 
-void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) {
+void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {
 
     setMeshBuffers(mPlaneVertexBuffer, mPlaneIndexBuffer, mPlaneIndexCount, MAT_PLANE, renderPass);
+    setMeshBuffers(mSphereVertexBuffer, mSphereIndexBuffer, mSphereIndexCount, MAT_SPHERE, renderPass);
 }
 
 void Scene::renderFrame(const float time) {
@@ -340,6 +346,7 @@ void Scene::renderFrame(const float time) {
 void Scene::initializeScene() {
 
     initializePlane();
+    initializeSphere();
 
 }
 
@@ -376,7 +383,39 @@ void Scene::initializePlane()
     wgpuQueueWriteBuffer(mQueue, mPlaneIndexBuffer, 0, indices.data(), bd.size);
 }
 
+void Scene::initializeSphere()
+{
+    std::cout << "Initializing sphere" << std::endl;
+    std::vector<SphereVertex> vertices;
+    std::vector<SphereIndex>  indices;
 
+    SphereGeometry::buildSphere(vertices, indices);
+    mSphereIndexCount = static_cast<uint32_t>(indices.size());
+    WGPUBufferDescriptor bd{};
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+    bd.size = vertices.size() * sizeof(SphereVertex);
+    mSphereVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mSphereVertexBuffer, 0, vertices.data(), bd.size);
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+    bd.size = indices.size() * sizeof(SphereIndex);
+    mSphereIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mSphereIndexBuffer, 0, indices.data(), bd.size);
+}
 
+void Scene::setMouseCoords(const float inX, const float inY) {
+    mMouseX = inX;
+    mMouseY = inY;
+}
 
+void Scene::setMouseDown(const bool mouseDown) {
+    constexpr float minButtonX = -0.9f;
+    constexpr float maxButtonX = -0.6f;
+    constexpr float minButtonY = -0.93f;
+    constexpr float maxButtonY = -0.45f;
 
+    if (mMouseX > minButtonX && mMouseX < maxButtonX && mMouseY > minButtonY && mMouseY < maxButtonY ) {
+
+        mMouseClicked = mouseDown;
+    }
+
+}

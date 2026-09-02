@@ -15,7 +15,7 @@
 #include "PlaneGeometry.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
-static constexpr uint32_t materialCount = 1;
+static constexpr uint32_t materialCount = 2;
 
 class Scene {
 public:
@@ -33,11 +33,11 @@ public:
     void reloadShader();
     //===================================================================================
     void configureVertexLayout();
-    void setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc);
+    void setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc);
     bool createPipeline();
     void updateTexture(uint32_t width, uint32_t height);
     void setUniforms(float time);
-    void renderMeshes(WGPURenderPassEncoder renderPass);
+    void renderMeshes(WGPURenderPassEncoder renderPass) const;
     void renderFrame(float time);
     void initializeScene();
     //===================================================================================
@@ -45,7 +45,12 @@ public:
     //===================================================================================
     void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
     void initializePlane();
-
+    void initializeSphere();
+    //===================================================================================
+    //Mouse and Key Input
+    //===================================================================================
+    void setMouseCoords(float inX, float inY);
+    void setMouseDown(const bool mouseDown);
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -53,6 +58,7 @@ public:
     WGPUFragmentState    getFragmentState() const { return mFragmentState; }
     WGPUColorTargetState getColorTarget()   const { return mColorTarget; }
     WGPUBlendState       getBlendState()    const { return mBlendState; }
+
 
 private:
     WGPUFragmentState            mFragmentState             = {};
@@ -82,6 +88,14 @@ private:
     WGPUBuffer                   mPlaneVertexBuffer         = nullptr;
     WGPUBuffer                   mPlaneIndexBuffer          = nullptr;
     uint32_t                     mPlaneIndexCount           = 0;
+    WGPUBuffer                   mSphereVertexBuffer        = nullptr;
+    WGPUBuffer                   mSphereIndexBuffer         = nullptr;
+    uint32_t                     mSphereIndexCount          = 0;
+
+    //Input
+    float mMouseX       = 0.0f;
+    float mMouseY       = 0.0f;
+    bool mMouseClicked  = false;
 };
 
 
