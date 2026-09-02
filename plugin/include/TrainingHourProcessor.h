@@ -7,6 +7,7 @@
 #include "TrainingNoise.h"
 #include "TrainingFilter.h"
 #include "MidiProcessor.h"
+#include "AudioUtils.h"
 
 namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
@@ -60,6 +61,8 @@ public:
     //UI
     std::atomic<float> outputLevel = 0.0f;
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout() };
+    void update();
+
 
 
 private:
@@ -68,7 +71,9 @@ private:
     ErikOscillator sineOsc;
     ErikDelay delay;
     MidiProcessor midiProcessor;
-    juce::AudioParameterBool strikeNoteParam;
+    juce::AudioParameterBool* strikeNoteParam;
+    bool mStrikeNote {false};
+
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     std::atomic<bool> parametersChanged{false};

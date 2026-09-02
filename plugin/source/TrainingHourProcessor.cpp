@@ -13,6 +13,8 @@ TrainingHourAudioProcessor::TrainingHourAudioProcessor()
                        )
 {
     apvts.state.addListener(this);
+    castParameter(apvts, ParameterID::strikeNote, strikeNoteParam);
+
 }
 
 TrainingHourAudioProcessor::~TrainingHourAudioProcessor()
@@ -203,11 +205,19 @@ float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase
 
 juce::AudioProcessorValueTreeState::ParameterLayout TrainingHourAudioProcessor::createParameterLayout() {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        ParameterID::strikeNote,
+        "On",
+        false));
+
     return layout;
 }
 
 void TrainingHourAudioProcessor::update() {
-    const bool onOff =
+
+    const bool onOff = strikeNoteParam->get();
+    mStrikeNote = onOff;
 }
 
 //==============================================================================
