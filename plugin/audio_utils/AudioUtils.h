@@ -9,7 +9,7 @@
 template<typename T>
 inline static void castParameter(juce::AudioProcessorValueTreeState& apvts, const juce::ParameterID&, T& destination)
 {
-    destination = dynamic_cast(apvts.getParameter(id.getParamID()));
+    destination = dynamic_cast<T> (apvts.getParameter(id.getParamID()));
     jassert(destination);
 }
 #endif //TRAININGHOUR_AUDIOUTILS_H
