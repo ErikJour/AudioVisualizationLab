@@ -10,7 +10,9 @@
 
 namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
-    //Params here
+
+    PARAMETER_ID(strikeNote)
+
 #undef PARAMETER_ID
 }
 
@@ -66,6 +68,7 @@ private:
     ErikOscillator sineOsc;
     ErikDelay delay;
     MidiProcessor midiProcessor;
+    juce::AudioParameterBool strikeNoteParam;
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     std::atomic<bool> parametersChanged{false};
