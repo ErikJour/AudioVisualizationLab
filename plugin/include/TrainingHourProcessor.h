@@ -62,6 +62,7 @@ public:
     std::atomic<float> outputLevel = 0.0f;
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout() };
     void update();
+    bool mStrikeNote {false};
 
 
 
@@ -72,7 +73,6 @@ private:
     ErikDelay delay;
     MidiProcessor midiProcessor;
     juce::AudioParameterBool* strikeNoteParam;
-    bool mStrikeNote {false};
 
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

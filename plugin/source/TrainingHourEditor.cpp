@@ -73,12 +73,13 @@ void TrainingHourProcessorEditor::mouseDown(const juce::MouseEvent& event)
 
     mWebGpuWindow.getScene().setMouseCoords(mappedX, mappedY);
     mWebGpuWindow.getScene().setMouseDown(true);
-
-    std::cout << "Should trigger note on here" << std::endl;
+    processorRef.mStrikeNote = true;
 }
 
 void TrainingHourProcessorEditor::mouseUp  (const juce::MouseEvent& event)
 {
     juce::ignoreUnused(event);
     mWebGpuWindow.getScene().setMouseDown(false);
+    processorRef.mStrikeNote = false;
+
 }

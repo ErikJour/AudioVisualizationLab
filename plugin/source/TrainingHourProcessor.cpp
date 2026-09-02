@@ -135,7 +135,7 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     //Process Midi
     //==========================================
     midiProcessor.processMidi(midiMessages);
-    bool noteOn = midiProcessor.noteOn;
+    bool noteOn = mStrikeNote;
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -168,7 +168,6 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         //Fade out the buffer
         sineOsc.reset();
         delay.clearBuffer();
-
     }
 
 
