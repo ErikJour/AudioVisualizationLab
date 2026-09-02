@@ -12,10 +12,12 @@ TrainingHourAudioProcessor::TrainingHourAudioProcessor()
                      #endif
                        )
 {
+    apvts.state.addListener(this);
 }
 
 TrainingHourAudioProcessor::~TrainingHourAudioProcessor()
 {
+    apvts.state.removeListener(this);
     sineOsc.reset();
 }
 
@@ -179,6 +181,13 @@ void TrainingHourAudioProcessor::setStateInformation (const void* data, int size
     juce::ignoreUnused (data, sizeInBytes);
 }
 
+float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase(); }
+
+juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    return layout;
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
@@ -186,5 +195,5 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new TrainingHourAudioProcessor();
 }
 
-float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase(); }
+
 

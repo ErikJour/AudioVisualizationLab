@@ -7,8 +7,15 @@
 #include "TrainingNoise.h"
 #include "TrainingFilter.h"
 
+namespace ParameterID {
+#define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
+    //Params here
+#undef PARAMETER_ID
+}
+
 //==============================================================================
-class TrainingHourAudioProcessor final : public juce::AudioProcessor
+class TrainingHourAudioProcessor final : public juce::AudioProcessor,
+                                            public juce::ValueTree::Listener
 {
 public:
     //==============================================================================
@@ -51,11 +58,17 @@ public:
     std::atomic<float> outputLevel = 0.0f;
 
 
+
 private:
     TrainingNoise noiseGenerator;
     TrainingFilter allPassFilter;
     ErikOscillator sineOsc;
     ErikDelay delay;
+    juce::AudioProcessorValueTreeState apvts;
+
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    std::atomic<bool> parametersChanged{false};
+    void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override { parametersChanged.store(true); }
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourAudioProcessor)
 };
