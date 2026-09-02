@@ -9,12 +9,12 @@
 //===================================================================================
 //Setup
 //====================================================================================
-void Scene::init(WGPUDevice device, WGPUQueue queue)                   { mDevice = device; mQueue = queue;        }
-void Scene::setSurface(const WGPUSurface surface)                      { mSurface                 = surface;      }
-void Scene::setSurfaceFormat(const WGPUTextureFormat format)           { mSurfaceFormat           = format;       }
-void Scene::setSurfaceSize(uint32_t width, uint32_t height)            { mWidth = width; mHeight  = height;       }
-void Scene::setShaderModule(WGPUShaderModule shaderModule)             { mShaderModule            = shaderModule; }
-void Scene::setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc) { mPipelineDesc            = pipelineDesc; }
+void Scene::init(WGPUDevice device, WGPUQueue queue)                          { mDevice = device; mQueue = queue;        }
+void Scene::setSurface(const WGPUSurface surface)                             { mSurface                 = surface;      }
+void Scene::setSurfaceFormat(const WGPUTextureFormat format)                  { mSurfaceFormat           = format;       }
+void Scene::setSurfaceSize(const uint32_t width, const uint32_t height)       { mWidth = width; mHeight  = height;       }
+void Scene::setShaderModule(const WGPUShaderModule shaderModule)              { mShaderModule            = shaderModule; }
+void Scene::setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc) { mPipelineDesc            = pipelineDesc; }
 void Scene::terminate()
 {
     if (mPlaneIndexBuffer)   { wgpuBufferRelease(mPlaneIndexBuffer);                           mPlaneIndexBuffer   = nullptr; }
@@ -419,8 +419,3 @@ void Scene::setMouseDown(const bool mouseDown) {
     }
 
 }
-
-
-
-
-

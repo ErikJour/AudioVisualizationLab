@@ -33,7 +33,7 @@ public:
     void reloadShader();
     //===================================================================================
     void configureVertexLayout();
-    void setPipelineDesc(WGPURenderPipelineDescriptor pipelineDesc);
+    void setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc);
     bool createPipeline();
     void updateTexture(uint32_t width, uint32_t height);
     void setUniforms(float time);
