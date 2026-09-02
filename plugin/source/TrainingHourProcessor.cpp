@@ -155,7 +155,7 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         //===================================================================================
         delay.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
         delay.processBuffer(buffer.getWritePointer(1), buffer.getNumSamples());
-        filterOne.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+        // filterOne.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
         //===================================================================================
         //Get the output value
         //===================================================================================
@@ -204,6 +204,10 @@ float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase
 juce::AudioProcessorValueTreeState::ParameterLayout TrainingHourAudioProcessor::createParameterLayout() {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     return layout;
+}
+
+void TrainingHourAudioProcessor::update() {
+    const bool onOff =
 }
 
 //==============================================================================
