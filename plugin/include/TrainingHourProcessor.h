@@ -68,7 +68,7 @@ public:
 
 private:
     TrainingNoise noiseGenerator;
-    TrainingFilter allPassFilter;
+    TrainingFilter filterOne;
     ErikOscillator sineOsc;
     ErikDelay delay;
     MidiProcessor midiProcessor;

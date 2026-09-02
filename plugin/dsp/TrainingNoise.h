@@ -15,7 +15,7 @@ class TrainingNoise {
         float getNextSample();
         void processBuffer(float* buffer, int numSamples);
     private:
-        float mLevel { 0.25f };
+        float mLevel { 0.05f };
         juce::Random randomNoise;
 };
 

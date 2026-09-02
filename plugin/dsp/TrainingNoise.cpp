@@ -4,7 +4,7 @@
 
 #include "TrainingNoise.h"
 
-TrainingNoise::TrainingNoise() = default;
+TrainingNoise::TrainingNoise()  = default;
 TrainingNoise::~TrainingNoise() = default;
 
 float TrainingNoise::getNextSample()
