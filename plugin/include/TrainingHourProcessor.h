@@ -56,7 +56,7 @@ public:
     float getSinePhase() const;
     //UI
     std::atomic<float> outputLevel = 0.0f;
-
+    juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout() };
 
 
 private:
@@ -64,7 +64,6 @@ private:
     TrainingFilter allPassFilter;
     ErikOscillator sineOsc;
     ErikDelay delay;
-    juce::AudioProcessorValueTreeState apvts;
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     std::atomic<bool> parametersChanged{false};

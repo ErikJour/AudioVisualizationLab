@@ -50,6 +50,7 @@ target_sources(TrainingHour
         UI/Scene.cpp
         geometries/PlaneGeometry.cpp
         geometries/SphereGeometry.cpp
+        audio_utils/AudioUtils.h
 )
 
 target_include_directories(TrainingHour
