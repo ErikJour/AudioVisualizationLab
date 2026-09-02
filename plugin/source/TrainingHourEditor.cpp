@@ -6,9 +6,7 @@ TrainingHourProcessorEditor::TrainingHourProcessorEditor (TrainingHourAudioProce
     : AudioProcessorEditor (&p), processorRef (p)
 {
     juce::ignoreUnused (processorRef);
-    constexpr int initWidth  = 800;
-    constexpr int initHeight = 450;
-    setSize (initWidth, initHeight);
+    setSize (WIDTH, HEIGHT);
     mWebGpuWindow.initialize();
 }
 
@@ -30,6 +28,7 @@ void TrainingHourProcessorEditor::parentHierarchyChanged()
     const double scale        = webGpuDisplay ? webGpuDisplay->scale : 1.0;
     const auto width          = static_cast<uint32_t>(getWidth() * scale);
     const auto height         = static_cast<uint32_t>(getHeight() * scale);
+
     if (!mWebGpuWindow.initSurface(scale, width, height))
         return;
 #if JUCE_MAC

@@ -2,6 +2,8 @@
 
 #include "TrainingHourProcessor.h"
 #include "webGpuWindow.h"
+#define WIDTH 800
+#define HEIGHT 450
 
 //==============================================================================
 class TrainingHourProcessorEditor final :   public juce::AudioProcessorEditor,

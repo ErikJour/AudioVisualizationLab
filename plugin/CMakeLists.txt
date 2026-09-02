@@ -60,6 +60,7 @@ target_include_directories(TrainingHour
         UI
         shaders
         geometries
+        audio_utils
 )
 
 target_link_libraries(TrainingHour
