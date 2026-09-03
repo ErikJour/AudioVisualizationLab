@@ -14,6 +14,7 @@ TrainingHourAudioProcessor::TrainingHourAudioProcessor()
 {
     apvts.state.addListener(this);
     castParameter(apvts, ParameterID::strikeNote, strikeNoteParam);
+    castParameter(apvts, ParameterID::delaySamples, delaySamplesParam);
 
 }
 
@@ -95,6 +96,7 @@ void TrainingHourAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     sineOsc.setFrequency(300.0f);
     delay.init(sampleRate);
     delay.setDelay(40000);
+    parametersChanged.store(true);
     juce::ignoreUnused ( samplesPerBlock);
 }
 
@@ -140,25 +142,28 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
-
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
+    bool expected = true;
+    if (parametersChanged.compare_exchange_strong(expected, false))
+        update();
 
         if (noteOn) {
             //===================================================================================
             //Sound generation
             //===================================================================================
             // sineOsc.setFrequency()
-            sineOsc.processBuffer(buffer.getWritePointer(i), buffer.getNumSamples());
+            sineOsc.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
             // noiseGenerator.processBuffer(buffer.getWritePointer(i), buffer.getNumSamples());
             //===================================================================================
             //Effects
             //===================================================================================
-            delay.processBuffer(buffer.getWritePointer(i), buffer.getNumSamples());
+            delay.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
             //===================================================================================
             //Get the output value
             //===================================================================================
-            float outputValue = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
+            float outputValue = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
             outputLevel.store(outputValue * 5.0f, std::memory_order_relaxed);
         }
         else {
@@ -168,7 +173,6 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         }
     }
 
-}
 
 //==============================================================================
 bool TrainingHourAudioProcessor::hasEditor() const
@@ -199,6 +203,12 @@ void TrainingHourAudioProcessor::setStateInformation (const void* data, int size
 
 float TrainingHourAudioProcessor::getSinePhase() const { return sineOsc.getPhase(); }
 
+void TrainingHourAudioProcessor::setDelay(float input)
+{
+    delaySamplesParam->setValueNotifyingHost(input);
+}
+
+
 juce::AudioProcessorValueTreeState::ParameterLayout TrainingHourAudioProcessor::createParameterLayout() {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
@@ -207,13 +217,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout TrainingHourAudioProcessor::
         "On",
         false));
 
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+       ParameterID::delaySamples,
+       "Delay in Samples",
+       juce::NormalisableRange<float> {0.0f, 1.0f, 0.01f, 1.0f } ,
+       0.5f));
+
     return layout;
 }
 
 void TrainingHourAudioProcessor::update() {
 
-    const bool onOff = strikeNoteParam->get();
+    bool onOff = strikeNoteParam->get();
     mStrikeNote      = onOff;
+    float delaySamples = delaySamplesParam->get();
+    int delayIntSample = static_cast<int>(delaySamples * 50000);
+    delay.setDelay(delayIntSample);
+    std::cout << delayIntSample << std::endl;
 }
 
 //==============================================================================

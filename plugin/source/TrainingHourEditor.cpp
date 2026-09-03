@@ -99,6 +99,9 @@ void TrainingHourProcessorEditor::mouseDrag  (const juce::MouseEvent& event)
     constexpr float minMapped  = -1.0f;
     constexpr float maxMapped  = 1.0f;
 
-    if (mappedX <= maxMapped && mappedX >= minMapped) { mWebGpuWindow.getScene().buttonModCoords(mappedX); }
+    if (mappedX <= maxMapped && mappedX >= minMapped) {
+        mWebGpuWindow.getScene().buttonModCoords(mappedX);
+        processorRef.setDelay(mappedX);
+    }
 
 }

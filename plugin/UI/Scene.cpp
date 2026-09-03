@@ -424,8 +424,8 @@ void Scene::setMouseDown(const bool mouseDown) {
 
 void Scene::buttonModCoords(const float x) {
 
-    std::cout << x << std::endl;
     //Set a uniform slider xOffset to this value
-    mButtonOffsetX = x;
+    if (mMouseClicked) {mButtonOffsetX = x;  }
+
 
 }

@@ -13,6 +13,7 @@ namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
 
     PARAMETER_ID(strikeNote)
+    PARAMETER_ID(delaySamples)
 
 #undef PARAMETER_ID
 }
@@ -58,26 +59,29 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     float getSinePhase() const;
+    void setDelay(float input);
     //UI
     std::atomic<float> outputLevel = 0.0f;
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout() };
-    void update();
     bool mStrikeNote {false};
 
 
 
 private:
-    TrainingNoise noiseGenerator;
-    TrainingFilter filterOne;
-    ErikOscillator sineOsc;
-    ErikDelay delay;
-    MidiProcessor midiProcessor;
-    juce::AudioParameterBool* strikeNoteParam;
+    TrainingNoise              noiseGenerator;
+    TrainingFilter             filterOne;
+    ErikOscillator             sineOsc;
+    ErikDelay                  delay;
+    MidiProcessor              midiProcessor;
+    juce::AudioParameterBool*  strikeNoteParam;
+    juce::AudioParameterFloat* delaySamplesParam;
 
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    std::atomic<bool> parametersChanged{false};
     void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override { parametersChanged.store(true); }
+    void update();
+    std::atomic<bool> parametersChanged{false};
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TrainingHourAudioProcessor)
 };

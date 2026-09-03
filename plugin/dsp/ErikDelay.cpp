@@ -18,6 +18,7 @@ void ErikDelay::init (const double sampleRate)
 
 void ErikDelay::setDelay(int delayInSamples)
 {
+    std::cout << delayInSamples << std::endl;
     if (delayInSamples < 0 )                      { delayInSamples = 0;                      }
     if (delayInSamples > mDelayBufferLength - 1 ) { delayInSamples = mDelayBufferLength - 1; }
     mDelayInSamples = delayInSamples;
