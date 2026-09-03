@@ -74,6 +74,7 @@ void TrainingHourProcessorEditor::mouseDown(const juce::MouseEvent& event)
     mWebGpuWindow.getScene().setMouseCoords(mappedX, mappedY);
     mWebGpuWindow.getScene().setMouseDown(true);
     processorRef.mStrikeNote = true;
+
 }
 
 void TrainingHourProcessorEditor::mouseUp  (const juce::MouseEvent& event)
@@ -81,5 +82,23 @@ void TrainingHourProcessorEditor::mouseUp  (const juce::MouseEvent& event)
     juce::ignoreUnused(event);
     mWebGpuWindow.getScene().setMouseDown(false);
     processorRef.mStrikeNote = false;
+}
+
+void TrainingHourProcessorEditor::mouseDrag  (const juce::MouseEvent& event)
+{
+    //Get raw juce mouse values
+    const int dragX            = event.getDistanceFromDragStartX();
+    constexpr int minimumDragX = -40;
+    constexpr int maxDragX     = 40;
+    //Map these to -1 to 1
+    const auto mappedX    = juce::jmap<float> (static_cast<float>(dragX),
+                                                        minimumDragX,
+                                                        maxDragX,
+                                                        -1.0f,
+                                                        1.0f);
+    constexpr float minMapped  = -1.0f;
+    constexpr float maxMapped  = 1.0f;
+
+    if (mappedX <= maxMapped && mappedX >= minMapped) { mWebGpuWindow.getScene().buttonModCoords(mappedX); }
 
 }

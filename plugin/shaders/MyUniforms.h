@@ -12,6 +12,7 @@ struct MyUniforms {
     float    time;
     uint32_t materialId;
     float    pressed;
+    float    buttonX;
 };
 
 static_assert(sizeof(MyUniforms) % 4 == 0);

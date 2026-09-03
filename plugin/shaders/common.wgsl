@@ -4,7 +4,8 @@ const MAT_SPHERE: u32   = 1u;
 struct Uniforms {
     time:       f32,
     materialId: u32,
-    pressed:    f32
+    pressed:    f32,
+    buttonX:    f32
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;

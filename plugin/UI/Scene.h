@@ -50,7 +50,10 @@ public:
     //Mouse and Key Input
     //===================================================================================
     void setMouseCoords(float inX, float inY);
-    void setMouseDown(const bool mouseDown);
+    void setMouseDown(bool mouseDown);
+
+    void buttonModCoords(float x);
+
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -93,9 +96,10 @@ private:
     uint32_t                     mSphereIndexCount          = 0;
 
     //Input
-    float mMouseX       = 0.0f;
-    float mMouseY       = 0.0f;
-    bool mMouseClicked  = false;
+    float mMouseX        = 0.0f;
+    float mMouseY        = 0.0f;
+    bool mMouseClicked   = false;
+    float mButtonOffsetX = 0.0f;
 };
 
 

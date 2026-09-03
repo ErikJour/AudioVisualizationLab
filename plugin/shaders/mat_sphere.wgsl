@@ -14,6 +14,7 @@ fn vertexSphere (position: ptr<function, vec3f>) -> vec4f {
     position.y -= 1.7;
     position.x *= 0.25;
     position.y *= 0.4;
+    position.x += u.buttonX * 0.1;
     return vec4f(*position, 1.0);
 
 }

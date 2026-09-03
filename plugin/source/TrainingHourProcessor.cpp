@@ -150,7 +150,7 @@ void TrainingHourAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             //===================================================================================
             // sineOsc.setFrequency()
             sineOsc.processBuffer(buffer.getWritePointer(i), buffer.getNumSamples());
-            noiseGenerator.processBuffer(buffer.getWritePointer(i), buffer.getNumSamples());
+            // noiseGenerator.processBuffer(buffer.getWritePointer(i), buffer.getNumSamples());
             //===================================================================================
             //Effects
             //===================================================================================

@@ -238,6 +238,8 @@ void Scene::setUniforms(const float time)
 
     mUniforms.pressed = mMouseClicked;
 
+    mUniforms.buttonX = mButtonOffsetX;
+
     for (uint32_t m = 0; m < materialCount; m++) {
         mUniforms.materialId = m;
         wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
@@ -417,5 +419,13 @@ void Scene::setMouseDown(const bool mouseDown) {
 
         mMouseClicked = mouseDown;
     }
+
+}
+
+void Scene::buttonModCoords(const float x) {
+
+    std::cout << x << std::endl;
+    //Set a uniform slider xOffset to this value
+    mButtonOffsetX = x;
 
 }
